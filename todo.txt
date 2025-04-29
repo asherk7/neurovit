@@ -1,0 +1,6 @@
+guide: https://www.learnpytorch.io/08_pytorch_paper_replicating/
+Revamp EthniVision by implementing the Vision Transformer (ViT) architecture based on the paper "An Image is Worth 16x16 Words: Transformers for Image Recognition"
+Enhance the entire ML pipeline (Data preparation, Cleaning, Bias Mitigation, Exploration, Preprocessing, Model building, Evaluation (Hyperparameter tuning, F1/Confusion Matrix))
+Visualize model decisions and use clustering to identify weaknesses similarities
+Deploy the model using FastAPI, contain it with Docker & scale it with Kubernetes
+Use OOP & Modular Design, Detailed README (Process/Skills/Technologies), Use GPT
