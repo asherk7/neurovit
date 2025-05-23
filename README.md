@@ -27,7 +27,8 @@ The model is trained to classify MRI brain tumor images into four categories: No
 ├── utils           # Utility functions for data loading, metrics, and visualization
 |   ├── images
 │   ├── data_loader.py
-│   └── metrics.py
+│   ├── metrics.py
+│   └── visualizations.py
 ├── .gitignore
 ├── LICENSE
 ├── main.py         # Main script to train/test the model
@@ -67,7 +68,7 @@ Accuracy and Loss history:
 ![Accuracy](utils/images/accuracy.png)
 ![Loss](utils/images/loss.png)
 
-Training history:
+Training Epoch history:
 ![Training History](utils/images/training_history.png)
 
 Confusion Matrix:
