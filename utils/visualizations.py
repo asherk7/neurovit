@@ -11,7 +11,7 @@ def brain_plot(root_dir):
     plt.figure(figsize=(20, 20))
     for i in range(16):
         plt.subplot(4, 4, i + 1)
-        index = i*375
+        index = i*375 # very rough way to get a balanced set of all tumor classifications
         img_path = train_df['filepath'].iloc[index]
         img = plt.imread(img_path)
         plt.imshow(img)
