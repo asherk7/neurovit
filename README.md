@@ -64,18 +64,21 @@ The model is trained to classify MRI brain tumor images into four categories: No
 
 ## Results
 
+Example images from the dataset:
+![Tumor](utils/images/tumor.jpg)
+
 Accuracy and Loss history:
-![Accuracy](utils/images/accuracy.png)
-![Loss](utils/images/loss.png)
+![Accuracy](utils/images/accuracy.jpg)
+![Loss](utils/images/loss.jpg)
 
 Training Epoch history:
-![Training History](utils/images/training_history.png)
+![Training History](utils/images/training_history.jpg)
 
 Confusion Matrix:
-![Confusion Matrix](utils/images/confusion_matrix.png)
+![Confusion Matrix](utils/images/confusion_matrix.jpg)
 
-Classification Report:
-![Classification Report](utils/images/classification_report.png)
+Example Prediction:
+![Example](utils/images/example.jpg)
 
 Final Model Performance:
 ```
