@@ -9,6 +9,7 @@ The model is trained to classify MRI brain tumor images into four categories: No
 - [Technologies](#technologies)
 - [Installation](#installation)
 - [Results](#results)
+- [References](#references)
 
 ## Folder Structure
 ```
@@ -88,3 +89,8 @@ Recall: __%
 F1 Score: __%
 ```
 The model achieved an accuracy of __% on the test set, demonstrating its effectiveness in classifying brain tumors from MRI scans.
+
+## References
+- [An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale](https://arxiv.org/abs/2010.11929)
+- [Attention is all you need (Transformer) - Model explanation (including math), Inference and Training](https://www.youtube.com/watch?v=bCz4OMemCcA)
+- [Kaggle Brain Tumor MRI Dataset](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset)
