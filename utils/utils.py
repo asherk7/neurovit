@@ -7,3 +7,6 @@ def get_metrics(y_true, y_pred):
         'matrix': confusion_matrix(y_true, y_pred)
     }
     return metrics
+
+def data_preprocess():
+    pass
