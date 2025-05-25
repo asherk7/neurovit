@@ -1,7 +1,3 @@
-#set up data, train, and test
-def train():
-    pass
-
 def test():
     pass
 
