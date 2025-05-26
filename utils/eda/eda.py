@@ -24,36 +24,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 
-def create_image_dataframe(root_dir):
-    data = []
-    for split in ['Testing', 'Training']:
-        split_path = os.path.join(root_dir, split)
-        for label in os.listdir(split_path):
-            label_path = os.path.join(split_path, label)
-            if os.path.isdir(label_path):
-                for fname in os.listdir(label_path):
-                    if fname.lower().endswith(('.jpg', '.jpeg')):
-                        full_path = os.path.join(label_path, fname)
-                        data.append({
-                            'filepath': full_path,
-                            'label': label,
-                            'split': split
-                        })
-    return pd.DataFrame(data)
-
-def create_dataframes():
-    df = create_image_dataframe('data')
-
-    train_df = df[df['split'] == 'Training'].copy()
-    train_df.drop(columns=['split'], inplace=True)
-    train_df.reset_index(drop=True, inplace=True)
-    print(train_df.head())
-
-    test_df = df[df['split'] == 'Testing'].copy()
-    test_df.drop(columns=['split'], inplace=True)
-    print(test_df.head())
-
-    return (train_df, test_df)
+from data_loader import get_dataframes
 
 def graph_distribution(df, split):
     plt.figure(figsize=(10, 5))
@@ -68,17 +39,18 @@ def sample_images(df):
 
     for i in range(16):
         plt.subplot(4, 4, i + 1)
-        index = i*375
+        index = i*375 # very rough way to get a balanced set of all tumor classifications
         img_path = df['filepath'].iloc[index]
         img = plt.imread(img_path)
         plt.imshow(img)
         plt.title(df['label'].iloc[index])
         plt.axis('off')
-        
+
+    plt.savefig('utils/images/tumor.jpg')
     plt.show()
 
 def main():
-    train_df, test_df = create_dataframes()
+    train_df, test_df = get_dataframes('data')
     graph_distribution(train_df, 'Training')
     graph_distribution(test_df, 'Testing')
     sample_images(train_df)

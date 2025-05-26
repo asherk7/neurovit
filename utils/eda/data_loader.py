@@ -24,13 +24,10 @@ def get_dataframes(root_dir):
     train_df = df[df['split'] == 'Training'].copy()
     train_df.drop(columns=['split'], inplace=True)
     train_df.reset_index(drop=True, inplace=True)
+    print(train_df.head())
 
     test_df = df[df['split'] == 'Testing'].copy()
     test_df.drop(columns=['split'], inplace=True)
+    print(test_df.head())
 
-    dataframes = {
-        'train': train_df,
-        'test': test_df
-    }
-    
-    return dataframes
+    return (train_df, test_df)
