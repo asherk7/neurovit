@@ -7,9 +7,7 @@ from utils.eda.data_loader import get_dataframes
 def plot_image(dataloader, classes):
     image_batch, label_batch = next(iter(dataloader))
     image, label = image_batch[0], label_batch[0]
-    print(image.shape, label)
 
-    # Plot image with matplotlib
     plt.imshow(image.permute(1, 2, 0)) # rearrange image dimensions to suit matplotlib [color_channels, height, width] -> [height, width, color_channels]
     plt.title(classes[label])
     plt.axis(False)
