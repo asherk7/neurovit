@@ -3,9 +3,8 @@ multihead attention class
 
 takes the input x, applies normalization, then sends it through a multihead attention layer
 
-according to the paper, heads=#, and dropout isn't used
+according to the paper, heads=12, and dropout isn't used after the qkv-projections (the transformer block)
 """
-import torch
 from torch import nn
 
 class MultiheadSelfAttention(nn.Module):
@@ -20,7 +19,7 @@ class MultiheadSelfAttention(nn.Module):
     
     def forward(self, x):
         x = self.norm(x)
-        x = self.multihead_attention(query=x,
+        x, _ = self.multihead_attention(query=x,
                                         key=x,
                                         value=x,
                                         need_weights=False) # we don't need the result weights

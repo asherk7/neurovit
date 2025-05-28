@@ -5,11 +5,14 @@ from utils.data_setup import create_dataloaders, transform_images
 from utils.eda.visualizations import plot_image
 from transformer.embedded_patches import EmbeddedPatches
 from transformer.multihead_attention import MultiheadSelfAttention
+from transformer.multilayer_perceptron import MultiLayerPerceptron
 
 NUM_EPOCHS = 5
 BATCH_SIZE = 32
 PATCH_SIZE = 16 
 NUM_HEADS = 12
+MLP_SIZE = 3072
+DROPOUT=0.1
 
 def visualize():
     pass
@@ -39,16 +42,17 @@ def main():
                                        embedded_dim=embedded_dim,
                                        num_patches=num_patches).to(device)
     image = embedded_patches(image)
-    print(f"image shape: {image.shape}")
 
 
     #transformer encoder section
     #multihead attention
-    msa = MultiheadSelfAttention(embedded_dim=embedded_dim, num_heads=NUM_HEADS, dropout=0)
+    msa = MultiheadSelfAttention(embedded_dim=embedded_dim, num_heads=NUM_HEADS, dropout=0).to(device)
     image = msa(image)
 
     #mlp head section
-
+    mlp = MultiLayerPerceptron(embedded_dim=embedded_dim, mlp_size=MLP_SIZE, dropout=DROPOUT).to(device)
+    image = mlp(image)
+    print(f"image shape: {image.shape}")
 
     #output
 
