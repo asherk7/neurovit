@@ -13,7 +13,6 @@ def plot_image(dataloader, classes):
     plt.axis(False)
     plt.show() 
 
-
 def accuracy_graph(results):
     accuracy = results["train_acc"]
     test_accuracy = results["test_acc"]

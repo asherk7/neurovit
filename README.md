@@ -81,6 +81,9 @@ Confusion Matrix:
 Example Prediction:
 ![Example](utils/images/example.jpg)
 
+Model Summary: (86 million parameters)
+![Model Summary](utils/images/model_summary.png)
+
 Final Model Performance:
 ```
 Accuracy: __%
