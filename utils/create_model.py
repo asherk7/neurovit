@@ -3,6 +3,7 @@ import torch
 from utils.data_setup import create_dataloaders, transform_images
 from utils.utils import set_seeds
 from utils.visualizations import visualize
+from utils.pipeline.train import train
 from transformer.vit import ViT
 
 #Model Parameters found from the paper
@@ -26,26 +27,11 @@ WEIGHT_DECAY = 0.3
 train_dir = "data/Training"
 test_dir = "data/Testing"
 
-def train_step():
-    pass
-
-def train(model: torch.nn.Module,
-          train_dataloader: torch.utils.data.DataLoader,
-          test_dataloader: torch.utils.data.DataLoader,
-          optimizer: torch.optim.Optimizer,
-          loss: torch.nn.Module,
-          epochs: int,
-          device: torch.device):
-    results = {"train_loss": [],
-               "train_acc": [],
-               "test_loss": [],
-               "test_acc": []}
-
 def main():
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     data_transformer = transform_images()
-    train_dataloader, test_dataloader, classes = create_dataloaders(train_dir=train_dir, 
+    train_dataloader, val_dataloader, test_dataloader, classes = create_dataloaders(train_dir=train_dir, 
                                                                     test_dir=test_dir, 
                                                                     transform=data_transformer, 
                                                                     batch_size=BATCH_SIZE)
@@ -61,7 +47,8 @@ def main():
               num_classes=classes).to(device)
     
     # The paper uses the Adam optimizer 
-    loss = torch.nn.CrossEntropyLoss()
+    loss_fn = torch.nn.CrossEntropyloss_fn()
+    
     optimzer = torch.optim.Adam(params=model.parameters(), 
                                 lr=LEARNING_RATE,
                                 betas=BETAS,
@@ -71,9 +58,9 @@ def main():
 
     results = train(model=model,
                     train_dataloader=train_dataloader,
-                    test_dataloader=test_dataloader,
+                    val_dataloader=val_dataloader,
                     optimizer=optimzer,
-                    loss=loss,
+                    loss_fn=loss_fn,
                     epochs=NUM_EPOCHS,
                     device=device)
     
