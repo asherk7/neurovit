@@ -4,10 +4,12 @@ import torch
 from utils.data_setup import create_dataloaders, transform_images
 from utils.eda.visualizations import plot_image
 from transformer.embedded_patches import EmbeddedPatches
+from transformer.multihead_attention import MultiheadSelfAttention
 
 NUM_EPOCHS = 5
 BATCH_SIZE = 32
 PATCH_SIZE = 16 
+NUM_HEADS = 12
 
 def visualize():
     pass
@@ -41,15 +43,9 @@ def main():
 
 
     #transformer encoder section
-
-    #normalization
-    #multi-head attention
-    #residual block
-
-    #normalization
-    #multi-head attention
-    #residual block
-
+    #multihead attention
+    msa = MultiheadSelfAttention(embedded_dim=embedded_dim, num_heads=NUM_HEADS, dropout=0)
+    image = msa(image)
 
     #mlp head section
 
