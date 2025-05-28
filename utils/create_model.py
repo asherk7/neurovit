@@ -4,7 +4,9 @@ from utils.data_setup import create_dataloaders, transform_images
 from utils.utils import set_seeds
 from utils.visualizations import visualize
 from utils.pipeline.train import train
+from utils.pipeline.test import test
 from transformer.vit import ViT
+from transformers import get_cosine_schedule_with_warmup
 
 #Model Parameters found from the paper
 PATCH_SIZE = 16 
@@ -49,22 +51,35 @@ def main():
     # The paper uses the Adam optimizer 
     loss_fn = torch.nn.CrossEntropyloss_fn()
     
-    optimzer = torch.optim.Adam(params=model.parameters(), 
+    optimizer = torch.optim.Adam(params=model.parameters(), 
                                 lr=LEARNING_RATE,
                                 betas=BETAS,
                                 weight_decay=WEIGHT_DECAY)
+    
+
+    total_steps = len(train_dataloader) * NUM_EPOCHS
+    warmup_steps = int(0.1 * total_steps)
+
+    scheduler = get_cosine_schedule_with_warmup(
+        optimizer,
+        num_warmup_steps=warmup_steps,
+        num_training_steps=total_steps
+    )
     
     set_seeds()
 
     results = train(model=model,
                     train_dataloader=train_dataloader,
                     val_dataloader=val_dataloader,
-                    optimizer=optimzer,
+                    optimizer=optimizer,
+                    scheduler=scheduler,
                     loss_fn=loss_fn,
                     epochs=NUM_EPOCHS,
                     device=device)
     
     visualize(results)
+
+    test(model=model, test_dataloader=test_dataloader, device=device)
     
     torch.save(obj=model.state_dict(), f='transformer/model/vit.pth')
 

@@ -3,7 +3,7 @@ import torch
 def validate_step(model, val_dataloader, loss_fn, device):
     model.eval()
 
-    running_loss, last_loss = 0, 0
+    running_loss = 0
 
     with torch.no_grad():
         for batch, (X, y_true) in enumerate(val_dataloader):
@@ -17,6 +17,6 @@ def validate_step(model, val_dataloader, loss_fn, device):
             _, preds = torch.max(y_pred, 1)
             correct += (preds==y_true).sum().item()
 
-        val_loss = running_loss / len(val_dataloader)
-        val_acc = correct / len(val_dataloader)
+        val_loss = running_loss / len(val_dataloader.dataset)
+        val_acc = correct / len(val_dataloader.dataset)
         return val_loss, val_acc

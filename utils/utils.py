@@ -23,5 +23,3 @@ def model_summary(vit):
             row_settings=["var_names"])
     
     return summary
-
-#put test function here
