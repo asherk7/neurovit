@@ -1,8 +1,4 @@
-import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
-
-from utils.eda.data_loader import get_dataframes
 
 def plot_image(dataloader, classes):
     image_batch, label_batch = next(iter(dataloader))
@@ -48,3 +44,9 @@ def epoch_history():
 
 def get_matrix():
     pass
+
+def visualize(results):
+    accuracy_graph(results)
+    loss_graph(results)
+    epoch_history()
+    get_matrix()

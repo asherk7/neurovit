@@ -35,7 +35,11 @@ class EmbeddedPatches(nn.Module):
         num_of_patches (int): Number of patches in the input image.
     """
 
-    def __init__(self, patch_size=16, in_channels=3, embedded_dim=768, num_patches=196):
+    def __init__(self, 
+                 patch_size=16, 
+                 in_channels=3, 
+                 embedded_dim=768, 
+                 num_patches=196):
         super().__init__()
         self.patch_size = patch_size
         self.in_channels = in_channels

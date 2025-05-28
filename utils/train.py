@@ -1,9 +1,11 @@
 import torch
 
 from utils.data_setup import create_dataloaders, transform_images
+from utils.utils import set_seeds
+from utils.visualizations import visualize
 from transformer.vit import ViT
 
-#Model Parameters
+#Model Parameters found from the paper
 PATCH_SIZE = 16 
 NUM_HEADS = 12
 MLP_SIZE = 3072
@@ -13,21 +15,42 @@ IN_CHANNELS = 3
 EMBEDDED_DIM = PATCH_SIZE*PATCH_SIZE*IN_CHANNELS
 NUM_PATCHES = (224*224)//(PATCH_SIZE*PATCH_SIZE)
 
-#Hyperparmameters
+#Hyperparmameters found from the paper
+#Batch size has been reduced from 4096 due to limitations, weight decay and learning rate were taken from the small ImageNet parameters due to the small size of our dataset
 NUM_EPOCHS = 5
 BATCH_SIZE = 32
-LEARNING_RATE = 0.001
+LEARNING_RATE = 0.003
+BETAS = (0.9, 0.999)
+WEIGHT_DECAY = 0.3
 
 train_dir = "data/Training"
 test_dir = "data/Testing"
+
+def train_step():
+    pass
+
+def train(model: torch.nn.Module,
+          train_dataloader: torch.utils.data.DataLoader,
+          test_dataloader: torch.utils.data.DataLoader,
+          optimizer: torch.optim.Optimizer,
+          loss: torch.nn.Module,
+          epochs: int,
+          device: torch.device):
+    results = {"train_loss": [],
+               "train_acc": [],
+               "test_loss": [],
+               "test_acc": []}
 
 def main():
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     data_transformer = transform_images()
-    train_dataloader, test_dataloader, classes = create_dataloaders(train_dir, test_dir, data_transformer, BATCH_SIZE)
+    train_dataloader, test_dataloader, classes = create_dataloaders(train_dir=train_dir, 
+                                                                    test_dir=test_dir, 
+                                                                    transform=data_transformer, 
+                                                                    batch_size=BATCH_SIZE)
 
-    vit = ViT(embedded_dim=EMBEDDED_DIM,
+    model = ViT(embedded_dim=EMBEDDED_DIM,
               patch_size=PATCH_SIZE,
               in_channels=IN_CHANNELS,
               num_patches=NUM_PATCHES,
@@ -35,7 +58,28 @@ def main():
               mlp_size=MLP_SIZE,
               mlp_dropout=MLP_DROPOUT,
               attention_dropout=ATTENTION_DROPOUT,
-              num_classes=classes)
+              num_classes=classes).to(device)
+    
+    # The paper uses the Adam optimizer 
+    loss = torch.nn.CrossEntropyLoss()
+    optimzer = torch.optim.Adam(params=model.parameters(), 
+                                lr=LEARNING_RATE,
+                                betas=BETAS,
+                                weight_decay=WEIGHT_DECAY)
+    
+    set_seeds()
+
+    results = train(model=model,
+                    train_dataloader=train_dataloader,
+                    test_dataloader=test_dataloader,
+                    optimizer=optimzer,
+                    loss=loss,
+                    epochs=NUM_EPOCHS,
+                    device=device)
+    
+    visualize(results)
+    
+    torch.save(obj=model.state_dict(), f='transformer/model/vit.pth')
 
 if __name__ == '__main__':
     main()

@@ -19,10 +19,8 @@ Key Features:
 - Source: https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset
 '''
 
-import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import os
 
 from data_loader import get_dataframes
 

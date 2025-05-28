@@ -1,7 +1,7 @@
 import os
 
 from torchvision import datasets, transforms
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 
 NUM_WORKERS = os.cpu_count() or 0  # Use all available CPU cores, default to 0 if none are available
 
@@ -23,11 +23,32 @@ def create_dataloaders(train_dir, test_dir, transform: transforms.Compose, batch
 
     classes = train_data.classes
 
-    # turn the image datasets into data loaders
-    train_dataloader = DataLoader(train_data, batch_size, shuffle=True, num_workers=num_workers, pin_memory=True)
-    test_dataloader = DataLoader(test_data, batch_size, shuffle=False, num_workers=num_workers, pin_memory=True)
+    # get a train/val split
+    train_size = int(0.8* len(train_data))
+    val_size = len(train_data) - train_size
+    
+    train_dataset, val_dataset = random_split(train_data, [train_size, val_size])
 
-    return train_dataloader, test_dataloader, classes
+    # turn the image datasets into data loaders
+    train_dataloader = DataLoader(train_dataset, 
+                                  batch_size, 
+                                  shuffle=True, 
+                                  num_workers=num_workers, 
+                                  pin_memory=True)
+    
+    val_dataloader = DataLoader(val_dataset,
+                                batch_size,
+                                shuffle=False,
+                                num_workers=num_workers,
+                                pin_memory=True)
+    
+    test_dataloader = DataLoader(test_data, 
+                                 batch_size, 
+                                 shuffle=False, 
+                                 num_workers=num_workers, 
+                                 pin_memory=True)
+
+    return train_dataloader, val_dataloader, test_dataloader, classes
 
 def transform_images():
     IMG_SIZE = 224 #according to table 3 in the paper

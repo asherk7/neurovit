@@ -13,11 +13,21 @@ from transformer.multilayer_perceptron import MultiLayerPerceptron
 #nn.TransformerEncoderLayer can be used when not recreating a paper
 
 class Encoder(nn.Module):
-    def __init__(self, embedded_dim=768, num_heads=12, mlp_size=3072, mlp_dropout=0.1, attention_dropout=0):
+    def __init__(self, 
+                 embedded_dim=768, 
+                 num_heads=12, 
+                 mlp_size=3072, 
+                 mlp_dropout=0.1, 
+                 attention_dropout=0):
         super().__init__()
         
-        self.mlp = MultiLayerPerceptron(embedded_dim=embedded_dim, mlp_size=mlp_size, dropout=mlp_dropout)
-        self.msa = MultiheadSelfAttention(embedded_dim=embedded_dim, num_heads=num_heads, dropout=attention_dropout)
+        self.mlp = MultiLayerPerceptron(embedded_dim=embedded_dim, 
+                                        mlp_size=mlp_size, 
+                                        dropout=mlp_dropout)
+        
+        self.msa = MultiheadSelfAttention(embedded_dim=embedded_dim, 
+                                          num_heads=num_heads, 
+                                          dropout=attention_dropout)
     
     def forward(self, x):
         #use residual connections
