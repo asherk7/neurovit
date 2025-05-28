@@ -3,9 +3,7 @@ import torch
 
 from utils.data_setup import create_dataloaders, transform_images
 from utils.eda.visualizations import plot_image
-from transformer.patch_embedding import PatchEmbedding
-from transformer.class_token import ClassToken
-from transformer.position_embedding import PositionEmbedding
+from transformer.embedded_patches import EmbeddedPatches
 
 NUM_EPOCHS = 5
 BATCH_SIZE = 32
@@ -28,26 +26,37 @@ def main():
     #get image
     image = next(iter(train_dataloader))[0][0]  # Get the first image from the first batch
     image = image.unsqueeze(0).to(device)  # Add batch dimension
+    print(image.shape)
 
     embedded_dim = PATCH_SIZE * PATCH_SIZE * 3 
-    num_of_patches = (image.shape[2] * image.shape[3]) // (PATCH_SIZE * PATCH_SIZE)
+    num_patches = (image.shape[2] * image.shape[3]) // (PATCH_SIZE * PATCH_SIZE)
 
-    #patch embedding layer
-    patch_embedding = PatchEmbedding(patch_size=PATCH_SIZE, in_channels=image.shape[1], embedded_dim=embedded_dim).to(device)  
-    image = patch_embedding(image) 
-    print(f"Patch shape: {image.shape}")
+    #embedded patches section
+    embedded_patches = EmbeddedPatches(patch_size=PATCH_SIZE, 
+                                       in_channels=image.shape[1],
+                                       embedded_dim=embedded_dim,
+                                       num_patches=num_patches).to(device)
+    image = embedded_patches(image)
+    print(f"image shape: {image.shape}")
 
-    #class token
-    class_token = ClassToken(embedded_dim=embedded_dim, batch_size=image.shape[0]).to(device)
-    image = class_token(image)
-    print(f"Class token shape: {image.shape}")
 
-    #position embedding
-    position_embedding = PositionEmbedding(num_patches=num_of_patches, embedded_dim=embedded_dim).to(device)
-    image = position_embedding(image)
-    print(f"Position embedding shape: {image.shape}")
+    #transformer encoder section
 
-    
+    #normalization
+    #multi-head attention
+    #residual block
+
+    #normalization
+    #multi-head attention
+    #residual block
+
+
+    #mlp head section
+
+
+    #output
+
+
 
 if __name__ == '__main__':
     main()
