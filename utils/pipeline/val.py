@@ -4,6 +4,7 @@ def validate_step(model, val_dataloader, loss_fn, device):
     model.eval()
 
     running_loss = 0
+    correct = 0
 
     with torch.no_grad():
         for batch, (X, y_true) in enumerate(val_dataloader):

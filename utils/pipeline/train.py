@@ -1,10 +1,6 @@
 import torch
 from pipeline.val import validate_step
 
-EARLY_STOP = 5
-best_val_loss = float('inf')
-failed_epochs = 0
-
 def train_step(model, train_dataloader, optimizer, loss_fn, device):
     model.train()
 
@@ -13,7 +9,6 @@ def train_step(model, train_dataloader, optimizer, loss_fn, device):
 
     for batch, (X, y_true) in enumerate(train_dataloader):
         X, y_true = X.to(device), y_true.to(device)
-        print(batch)
 
         optimizer.zero_grad()
 
@@ -43,8 +38,11 @@ def train(model: torch.nn.Module,
     
     results = {"train_loss": [],
                "train_acc": [],
-               "test_loss": [],
-               "test_acc": []}
+               "val_loss": [],
+               "val_acc": []}
+    best_val_loss = float('inf')
+    failed_epochs = 0
+    early_stop = 5
     
     model.to(device)
 
@@ -74,7 +72,7 @@ def train(model: torch.nn.Module,
         else:
             failed_epochs += 1
         
-        if failed_epochs >= EARLY_STOP:
+        if failed_epochs >= early_stop:
             print("Early stopping triggered due to complacent model learning")
             break
 

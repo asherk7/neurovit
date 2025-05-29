@@ -10,31 +10,31 @@ def plot_image(dataloader, classes):
     plt.show() 
 
 def accuracy_graph(results):
-    accuracy = results["train_acc"]
-    test_accuracy = results["test_acc"]
+    train_acc = results["train_acc"]
+    val_acc = results["val_acc"]
 
     epochs = range(len(results["train_loss"]))
 
     plt.figure(figsize=(15, 7))
 
     plt.subplot(1, 2, 2)
-    plt.plot(epochs, accuracy, label="train_accuracy")
-    plt.plot(epochs, test_accuracy, label="test_accuracy")
+    plt.plot(epochs, train_acc, label="train_accuracy")
+    plt.plot(epochs, val_acc, label="val_accuracy")
     plt.title("Accuracy")
     plt.xlabel("Epochs")
     plt.legend()
 
 def loss_graph(results):
-    loss = results["train_loss"]
-    test_loss = results["test_loss"]
+    train_loss = results["train_loss"]
+    val_loss = results["val_loss"]
 
     epochs = range(len(results["train_loss"]))
 
     plt.figure(figsize=(15,7))
 
     plt.subplot(1, 2, 1)
-    plt.plot(epochs, loss, label="train_loss")
-    plt.plot(epochs, test_loss, label="test_loss")
+    plt.plot(epochs, train_loss, label="train_loss")
+    plt.plot(epochs, val_loss, label="val_loss")
     plt.title("Loss")
     plt.xlabel("Epochs")
     plt.legend()
