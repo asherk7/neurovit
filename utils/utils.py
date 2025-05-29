@@ -1,6 +1,7 @@
 import torch
 from torchinfo import summary
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from collections import Counter
 
 def set_seeds(seed=42):
     torch.manual_seed(seed)
@@ -23,3 +24,10 @@ def model_summary(vit):
             row_settings=["var_names"])
     
     return summary
+
+def get_class_distribution(dataset, data):
+    labels = []
+    for idx in dataset.indices: 
+        label = data.targets[idx]
+        labels.append(label)
+    return Counter(labels)

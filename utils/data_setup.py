@@ -2,6 +2,7 @@ import os
 
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, random_split
+from utils import get_class_distribution
 
 NUM_WORKERS = os.cpu_count() or 0  # Use all available CPU cores, default to 0 if none are available
 
@@ -28,6 +29,9 @@ def create_dataloaders(train_dir, test_dir, transform: transforms.Compose, batch
     val_size = len(train_data) - train_size
     
     train_dataset, val_dataset = random_split(train_data, [train_size, val_size])
+
+    #print("Train distribution:", get_class_distribution(train_dataset, train_data))
+    #print("Val distribution:", get_class_distribution(val_dataset, train_data))
 
     # turn the image datasets into data loaders
     train_dataloader = DataLoader(train_dataset, 

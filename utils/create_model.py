@@ -36,6 +36,7 @@ test_dir = "data/Testing"
 
 def main():
     device = "mps" if torch.backends.mps.is_available() else "cpu"
+    set_seeds()
 
     data_transformer = transform_images()
     train_dataloader, val_dataloader, test_dataloader, classes = create_dataloaders(train_dir=train_dir, 
@@ -73,8 +74,6 @@ def main():
         num_warmup_steps=warmup_steps,
         num_training_steps=total_steps
     )
-    
-    set_seeds()
 
     results = train(model=model,
                     train_dataloader=train_dataloader,
@@ -85,10 +84,10 @@ def main():
                     epochs=NUM_EPOCHS,
                     device=device)
     
-    visualize(results)
-
-    test(model=model, test_dataloader=test_dataloader, device=device)
+    y_pred, y_true = test(model=model, test_dataloader=test_dataloader, device=device)
     
+    visualize(results, y_pred, y_true, classes)
+
     torch.save(obj=model.state_dict(), f='transformer/model/vit.pth')
 
 if __name__ == '__main__':
