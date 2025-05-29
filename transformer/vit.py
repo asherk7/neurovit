@@ -2,7 +2,6 @@
 putting the whole model together
 """
 
-import torch
 from torch import nn
 from transformer.embedded_patches import EmbeddedPatches
 from transformer.encoder import Encoder

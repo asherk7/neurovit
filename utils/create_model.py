@@ -1,4 +1,9 @@
 import torch
+import sys
+import os
+
+# Add the project root directory to sys.path so I can import from the transformer folder
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from data_setup import create_dataloaders, transform_images
 from utils import set_seeds
@@ -30,13 +35,15 @@ train_dir = "data/Training"
 test_dir = "data/Testing"
 
 def main():
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    device = "mps" if torch.backends.mps.is_available() else "cpu"
 
     data_transformer = transform_images()
     train_dataloader, val_dataloader, test_dataloader, classes = create_dataloaders(train_dir=train_dir, 
                                                                     test_dir=test_dir, 
                                                                     transform=data_transformer, 
                                                                     batch_size=BATCH_SIZE)
+    
+    num_classes = len(classes)
 
     model = ViT(embedded_dim=EMBEDDED_DIM,
               patch_size=PATCH_SIZE,
@@ -46,10 +53,10 @@ def main():
               mlp_size=MLP_SIZE,
               mlp_dropout=MLP_DROPOUT,
               attention_dropout=ATTENTION_DROPOUT,
-              num_classes=classes).to(device)
+              num_classes=num_classes).to(device)
     
     # The paper uses the Adam optimizer 
-    loss_fn = torch.nn.CrossEntropyloss_fn()
+    loss_fn = torch.nn.CrossEntropyLoss()
     
     optimizer = torch.optim.Adam(params=model.parameters(), 
                                 lr=LEARNING_RATE,

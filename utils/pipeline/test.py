@@ -3,16 +3,18 @@ import torch
 def test(model, test_dataloader, device):
     model.eval()
 
-    correct, total = 0, 0
+    correct = 0
 
     with torch.no_grad():
-        for inputs, labels in test_dataloader:
-            inputs, labels = inputs.to(device), labels.to(device)
+        for batch, (X, y_true) in enumerate(test_dataloader):
+            X, y_true = X.to(device), y_true.to(device)
 
-            outputs = model(inputs)
+            y_pred = model(X)
 
-            _, predicted = torch.max(outputs, 1)
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
+            _, predicted = torch.max(y_pred, 1)
+            total += y_true.size(0)
+            correct += (predicted == y_true).sum().item()
+
+        test_accuracy = correct / len(test_dataloader.dataset)
             
-    print(f"Test Accuracy: {100 * correct / total:.2f}%")
+    print(f"Test Accuracy: {100 * test_accuracy:.2f}%")
