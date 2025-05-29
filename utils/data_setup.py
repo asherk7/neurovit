@@ -3,6 +3,12 @@ import os
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader, random_split
 
+
+from torch.utils.data import Subset
+import numpy as np
+
+
+
 NUM_WORKERS = os.cpu_count() or 0  # Use all available CPU cores, default to 0 if none are available
 
 def create_dataloaders(train_dir, test_dir, transform: transforms.Compose, batch_size, num_workers=NUM_WORKERS):
@@ -20,6 +26,22 @@ def create_dataloaders(train_dir, test_dir, transform: transforms.Compose, batch
     # create datasets using torchvision
     train_data = datasets.ImageFolder(train_dir, transform)
     test_data = datasets.ImageFolder(test_dir, transform)
+
+
+
+
+
+
+
+    total_len = len(train_data)
+    subset_len = int(0.05 * total_len)
+    subset_indices = np.random.choice(range(total_len), subset_len, replace=False)
+    train_data = Subset(train_data, subset_indices)
+
+
+
+
+
 
     classes = train_data.classes
 

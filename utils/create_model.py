@@ -1,10 +1,10 @@
 import torch
 
-from utils.data_setup import create_dataloaders, transform_images
-from utils.utils import set_seeds
-from utils.visualizations import visualize
-from utils.pipeline.train import train
-from utils.pipeline.test import test
+from data_setup import create_dataloaders, transform_images
+from utils import set_seeds
+from visualizations import visualize
+from pipeline.train import train
+from pipeline.test import test
 from transformer.vit import ViT
 from transformers import get_cosine_schedule_with_warmup
 
@@ -60,6 +60,7 @@ def main():
     total_steps = len(train_dataloader) * NUM_EPOCHS
     warmup_steps = int(0.1 * total_steps)
 
+    # scheduler used in the paper (explain warmup for preventing optimizer trapped in local min, using annealing for adam)
     scheduler = get_cosine_schedule_with_warmup(
         optimizer,
         num_warmup_steps=warmup_steps,
