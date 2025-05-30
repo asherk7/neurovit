@@ -42,7 +42,7 @@ def train(model: torch.nn.Module,
                "val_acc": []}
     best_val_loss = float('inf')
     failed_epochs = 0
-    early_stop = 5
+    early_stop = 3
     
     model.to(device)
 

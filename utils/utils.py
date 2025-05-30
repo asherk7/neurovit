@@ -49,7 +49,7 @@ def load_pretrained_weights(model, pretrained_weights):
     Returns:
         model: The model with loaded weights.
     """
-    state_dict = torch.load(pretrained_weights, map_location='mps')
+    state_dict = torch.load(pretrained_weights, map_location='mps', weights_only=True)
     converted_state_dict = rename_keys(state_dict)
     model.load_state_dict(converted_state_dict, strict=False)
 

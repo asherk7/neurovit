@@ -25,7 +25,7 @@ NUM_PATCHES = (224*224)//(PATCH_SIZE*PATCH_SIZE)
 
 #Hyperparmameters found from the paper
 #Batch size, weight decay, and learning rate have been adjusted due to limitations of the dataset and training environment used in this project
-NUM_EPOCHS = 50
+NUM_EPOCHS = 25
 BATCH_SIZE = 32 #in the paper, they used 4096 for the large ImageNet dataset
 LEARNING_RATE = 0.0001 #in the paper, they used 0.003 for the large ImageNet dataset
 BETAS = (0.9, 0.999)
