@@ -6,7 +6,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from data_setup import create_dataloaders, transform_images
-from utils import set_seeds
+from utils import set_seeds, load_pretrained_weights, model_summary
 from visualizations import visualize
 from pipeline.train import train
 from pipeline.test import test
@@ -24,24 +24,28 @@ EMBEDDED_DIM = PATCH_SIZE*PATCH_SIZE*IN_CHANNELS
 NUM_PATCHES = (224*224)//(PATCH_SIZE*PATCH_SIZE)
 
 #Hyperparmameters found from the paper
-#Batch size has been reduced from 4096 due to limitations, weight decay and learning rate were taken from the small ImageNet parameters due to the small size of our dataset
+#Batch size, weight decay, and learning rate have been adjusted due to limitations of the dataset and training environment used in this project
 NUM_EPOCHS = 50
-BATCH_SIZE = 32
-LEARNING_RATE = 0.003
+BATCH_SIZE = 32 #in the paper, they used 4096 for the large ImageNet dataset
+LEARNING_RATE = 0.0001 #in the paper, they used 0.003 for the large ImageNet dataset
 BETAS = (0.9, 0.999)
-WEIGHT_DECAY = 0.3
+WEIGHT_DECAY = 0.01 #in the paper, they used 0.1 for the large ImageNet dataset
 
 train_dir = "data/Training"
 test_dir = "data/Testing"
+
+pretrained_weights = 'transformer/model/vit_b_16-c867db91.pth'
 
 def main():
     device = "mps" if torch.backends.mps.is_available() else "cpu"
     set_seeds()
 
-    data_transformer = transform_images()
+    train_transformer = transform_images(train=True)
+    test_transformer = transform_images(train=False)
     train_dataloader, val_dataloader, test_dataloader, classes = create_dataloaders(train_dir=train_dir, 
                                                                     test_dir=test_dir, 
-                                                                    transform=data_transformer, 
+                                                                    train_transform=train_transformer, 
+                                                                    test_transform=test_transformer,
                                                                     batch_size=BATCH_SIZE)
     
     num_classes = len(classes)
@@ -56,7 +60,14 @@ def main():
               attention_dropout=ATTENTION_DROPOUT,
               num_classes=num_classes).to(device)
     
-    # The paper uses the Adam optimizer 
+    # Load pretrained weights from HuggingFace ViT model
+    model = load_pretrained_weights(model, pretrained_weights=pretrained_weights)
+
+    # Print model summary
+    #model_summary(model)
+    
+    # The paper uses the Adam optimizer and the cosine learning rate scheduler with warmup
+    # The loss function used in the paper is CrossEntropyLoss
     loss_fn = torch.nn.CrossEntropyLoss()
     
     optimizer = torch.optim.Adam(params=model.parameters(), 

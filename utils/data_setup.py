@@ -6,7 +6,7 @@ from utils import get_class_distribution
 
 NUM_WORKERS = os.cpu_count() or 0  # Use all available CPU cores, default to 0 if none are available
 
-def create_dataloaders(train_dir, test_dir, transform: transforms.Compose, batch_size, num_workers=NUM_WORKERS):
+def create_dataloaders(train_dir, test_dir, train_transform: transforms.Compose, test_transform: transforms.Compose, batch_size, num_workers=NUM_WORKERS):
     """
     Creates training and testing DataLoaders using the directory path, turning them into PyTorch Datasets, then into PyTorch DataLoaders
 
@@ -19,8 +19,8 @@ def create_dataloaders(train_dir, test_dir, transform: transforms.Compose, batch
     """
 
     # create datasets using torchvision
-    train_data = datasets.ImageFolder(train_dir, transform)
-    test_data = datasets.ImageFolder(test_dir, transform)
+    train_data = datasets.ImageFolder(train_dir, train_transform)
+    test_data = datasets.ImageFolder(test_dir, test_transform)
 
     classes = train_data.classes
 
@@ -54,14 +54,26 @@ def create_dataloaders(train_dir, test_dir, transform: transforms.Compose, batch
 
     return train_dataloader, val_dataloader, test_dataloader, classes
 
-def transform_images():
-    IMG_SIZE = 224 #according to table 3 in the paper
+def transform_images(train=True):
+    IMG_SIZE = 224 # Standard size for ViT models, according to table 3 in the paper
 
-    transform = transforms.Compose([
-        transforms.Resize((IMG_SIZE, IMG_SIZE)),
-        transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)) # 2 tuples for mean/std, 3 values for RBG
-    ])
+    if train:
+        transform = transforms.Compose([
+            transforms.Resize((IMG_SIZE, IMG_SIZE)),
+            transforms.RandomHorizontalFlip(p=0.5),
+            transforms.RandomRotation(degrees=15),
+            transforms.RandomAffine(degrees=0, translate=(0.05, 0.05), scale=(0.95, 1.05)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)) # matching values to the pytorch pretrained weights
+        ])
+    else:
+        transform = transforms.Compose([
+            transforms.Resize((IMG_SIZE, IMG_SIZE)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)) # 3 values for RBG
+        ])
 
     return transform
 
+if __name__ == "__main__":
+    create_dataloaders()

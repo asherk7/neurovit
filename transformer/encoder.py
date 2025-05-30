@@ -21,16 +21,16 @@ class Encoder(nn.Module):
                  attention_dropout=0):
         super().__init__()
         
+        self.self_attention = MultiheadSelfAttention(embedded_dim=embedded_dim, 
+                                          num_heads=num_heads, 
+                                          dropout=attention_dropout)
+        
         self.mlp = MultiLayerPerceptron(embedded_dim=embedded_dim, 
                                         mlp_size=mlp_size, 
                                         dropout=mlp_dropout)
-        
-        self.msa = MultiheadSelfAttention(embedded_dim=embedded_dim, 
-                                          num_heads=num_heads, 
-                                          dropout=attention_dropout)
     
     def forward(self, x):
         #use residual connections
-        x = self.msa(x) + x
+        x = self.self_attention(x) + x
         x = self.mlp(x) + x
         return x

@@ -46,13 +46,13 @@ class EmbeddedPatches(nn.Module):
         self.embedded_dim = embedded_dim
         self.num_patches = num_patches
 
-        self.patcher = nn.Conv2d(in_channels=self.in_channels, 
+        self.patch_embeddings = nn.Conv2d(in_channels=self.in_channels, 
                                  out_channels=self.embedded_dim, 
                                  kernel_size=self.patch_size, 
                                  stride=self.patch_size)
         self.flatten = nn.Flatten(start_dim=2)
-        self.token = nn.Parameter(torch.randn(1, 1, self.embedded_dim), requires_grad=True)
-        self.positions = nn.Parameter(torch.randn(1, self.num_patches+1, self.embedded_dim), requires_grad=True) # +1 for the class token
+        self.cls_token = nn.Parameter(torch.randn(1, 1, self.embedded_dim), requires_grad=True)
+        self.position_embeddings = nn.Parameter(torch.randn(1, self.num_patches+1, self.embedded_dim), requires_grad=True) # +1 for the class token
 
     def forward(self, x):
         x = self.patch_embedding(x)
@@ -61,17 +61,17 @@ class EmbeddedPatches(nn.Module):
         return x
 
     def patch_embedding(self, x):
-        x = self.patcher(x)
+        x = self.patch_embeddings(x)
         x = self.flatten(x)
         x = x.transpose(1, 2)
         return x
 
     def class_token(self, x):
         batch_size = x.shape[0]
-        token = self.token.expand(batch_size, -1, -1)
+        token = self.cls_token.expand(batch_size, -1, -1)
         x = torch.cat((token, x), dim=1) # Concatenate class token to the start of the image patches
         return x
     
     def position_embedding(self, x):
-        x = x + self.positions #add the vectors
+        x = x + self.position_embeddings #add the vectors
         return x

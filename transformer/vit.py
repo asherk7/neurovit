@@ -20,7 +20,7 @@ class ViT(nn.Module):
                  num_classes=4):
         super().__init__()
 
-        self.embedded_patches = EmbeddedPatches(patch_size=patch_size, 
+        self.embeddings = EmbeddedPatches(patch_size=patch_size, 
                                                in_channels=in_channels, 
                                                embedded_dim=embedded_dim, 
                                                num_patches=num_patches)
@@ -34,7 +34,7 @@ class ViT(nn.Module):
         self.mlp_head = MLP_Head(embedded_dim=embedded_dim, num_classes=num_classes)
 
     def forward(self, x):
-        x = self.embedded_patches(x)
+        x = self.embeddings(x)
 
         x = self.encoder(x)
 
