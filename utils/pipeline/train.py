@@ -10,7 +10,7 @@ def train_step(model, train_dataloader, optimizer, loss_fn, device):
     for batch, (X, y_true) in enumerate(train_dataloader):
         X, y_true = X.to(device), y_true.to(device)
 
-        optimizer.zero_grad()
+        optimizer.zero_grad() # Reset gradients
 
         y_pred = model(X)
 
@@ -44,8 +44,6 @@ def train(model: torch.nn.Module,
     failed_epochs = 0
     early_stop = 3
     
-    model.to(device)
-
     for epoch in range(epochs):
         train_loss, train_acc = train_step(model=model, 
                                            train_dataloader=train_dataloader,
@@ -77,5 +75,8 @@ def train(model: torch.nn.Module,
             break
 
         scheduler.step()
-    
+
+        if torch.backends.mps.is_available():
+            torch.mps.empty_cache()
+
     return results

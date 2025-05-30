@@ -16,8 +16,8 @@ def test(model, test_dataloader, device):
             _, predicted = torch.max(y_pred, 1)
             correct += (predicted == y_true).sum().item()
 
-            y_pred_total.extend(predicted.cpu().tolist())
-            y_true_total.extend(y_true.cpu().tolist())
+            y_pred_total.extend(predicted.cpu().tolist()) # moves the tensor to CPU and converts it to a list, since python lists can only hold data from the CPU
+            y_true_total.extend(y_true.cpu().tolist()) # tolist() converts the tensor to a list so python can handle it
 
         test_accuracy = correct / len(test_dataloader.dataset)
             
