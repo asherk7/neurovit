@@ -29,15 +29,21 @@ After detection, the user can interact with a medical chatbot to ask follow-up q
 ## Folder Structure (Update later)
 
 ```
-├── vit_model/               # Custom ViT implementation and training code
-├── backend/                 # Flask API for model inference and chatbot
-├── frontend/                # React web app for UI
+├── vit/                     # Custom ViT implementation
+│   ├── transformer          # Transformer architecture implementation
+│   ├── model                # Vision Transformer model weights
+│   ├── pipeline             # Training and evaluation pipelines for the ViT model
+│   ├── eda                  # Exploratory Data Analysis scripts/images for the ViT model
+│   └── *.py                 # Other scripts related to the ViT model (e.g. data loading, utils, main training script)
+├── api/                     # FastAPI for web app, model inference, and chatbot
+├── data/                    # Dataset for training and evaluation
+├── llm/                     # LLM deployment with vLLM and LangChain integration
 ├── rag/                     # Scripts for vector DB and LangChain setup
-├── pubmed_fetcher/          # PubMed paper retrieval script
-├── database/                # PostgreSQL schema and logging scripts
+├── scraper/                 # PubMed paper retrieval script
+├── db/                      # PostgreSQL schema and logging scripts
 ├── docker/                  # Docker setup for full app
-├── utils/                   # Utility scripts for data processing and model training
-├── .env                     
+├── utils/                   # Utility scripts 
+├── .env                     # Environment variables for configuration
 ├── .gitignore               
 ├── LICENSE                  
 └── README.md

@@ -1,10 +1,24 @@
 import torch
-from pipeline.val import validate_step
+from val import validate_step
 
 def train_step(model, train_dataloader, optimizer, loss_fn, device):
-    model.train()
+    """
+    Perform one training epoch.
 
-    running_loss = 0
+    Args:
+        model (torch.nn.Module): The model being trained.
+        train_dataloader (DataLoader): DataLoader for the training set.
+        optimizer (Optimizer): Optimizer for updating model weights.
+        loss_fn (Loss): Loss function.
+        device (torch.device): Device to run computations on.
+
+    Returns:
+        tuple: Average training loss and accuracy for the epoch.
+    """
+
+    model.train() # Set model to training mode (enables dropout, batch normalization, etc.)
+
+    running_loss = 0 # Sum of losses across all batches for the epoch
     correct = 0
 
     for batch, (X, y_true) in enumerate(train_dataloader):
@@ -12,19 +26,20 @@ def train_step(model, train_dataloader, optimizer, loss_fn, device):
 
         optimizer.zero_grad() # Reset gradients
 
+        # Getting predictions, computing loss, backpropagating, and updating weights
         y_pred = model(X)
-
         loss = loss_fn(y_pred, y_true)
         loss.backward()
-
         optimizer.step()
 
+        # Accumulating results
         running_loss += loss.item() * X.size(0)
         _, predicted = torch.max(y_pred, 1)
         correct += (predicted==y_true).sum().item()
 
     train_loss = running_loss / len(train_dataloader.dataset)
     train_acc = correct / len(train_dataloader.dataset)
+
     return train_loss, train_acc
 
 def train(model: torch.nn.Module,
@@ -35,12 +50,30 @@ def train(model: torch.nn.Module,
           loss_fn: torch.nn.Module,
           epochs: int,
           device: torch.device):
+    """
+    Train the model over multiple epochs with validation and early stopping.
+
+    Args:
+        model (torch.nn.Module): Model to be trained.
+        train_dataloader (DataLoader): DataLoader for training data.
+        val_dataloader (DataLoader): DataLoader for validation data.
+        optimizer (Optimizer): Optimizer for training.
+        scheduler (LambdaLR): Learning rate scheduler.
+        loss_fn (Loss): Loss function.
+        epochs (int): Number of epochs to train.
+        device (torch.device): Device to run computations on (CPU/GPU/MPS).
+
+    Returns:
+        dict: Training and validation loss/accuracy per epoch.
+    """
     
     results = {"train_loss": [],
                "train_acc": [],
                "val_loss": [],
                "val_acc": []}
-    best_val_loss = float('inf')
+    
+    # Initialize variables for early stopping
+    best_val_loss = float('inf') 
     failed_epochs = 0
     early_stop = 3
     
@@ -64,6 +97,7 @@ def train(model: torch.nn.Module,
         results['val_loss'].append(val_loss)
         results['val_acc'].append(val_acc)
 
+        # If model isn't improving, trigger early stopping
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             failed_epochs = 0
@@ -74,8 +108,10 @@ def train(model: torch.nn.Module,
             print("Early stopping triggered due to complacent model learning")
             break
 
+        # Step the scheduler to adjust learning rate
         scheduler.step()
 
+        # Clear cache to free up memory
         if torch.backends.mps.is_available():
             torch.mps.empty_cache()
 
