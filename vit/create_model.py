@@ -48,7 +48,7 @@ test_dir = "data/Testing"
 pretrained_weights_pytorch = 'vit/model/vit_b_16-c867db91.pth'
 
 # Weights to fine-tune from first training run
-pretrained_weights_25epoch = 'vit/model/25epoch.pth'
+pretrained_weights_finetune = 'vit/model/finetune.pth'
 
 def main():
     # Set device to MPS (Apple Silicon) if available, otherwise use CPU

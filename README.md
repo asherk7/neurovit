@@ -86,6 +86,10 @@ The model is trained on the Brain Tumor MRI dataset using the following hyperpar
 - **Optimizer**: Adam
 - **Loss Function**: Cross-Entropy Loss
 - **Scheduler**: cosine annealing with warm restarts
+The model was finetuned after with the following hyperparameters:
+- **Learning Rate**: 0.00005
+- **Number of Epochs**: 15
+- **Label Smoothing**: 0.1
 
 The model is trained using the training set, and its performance is evaluated on the validation set. The training process includes data augmentation techniques such as random rotations, flips, and color jittering to improve model generalization.
 
@@ -112,17 +116,17 @@ The application is built using FastAPI, which provides a modern web interface fo
 ## Results
 
 Accuracy and Loss history:
-![Accuracy](utils/images/accuracy.jpg)
-![Loss](utils/images/loss.jpg)
+![Accuracy & Loss](vit/eda/images/training_graph.png)
+![F1 Score](vit/eda/images/f1_score.png)
 
 Model Summary: 
-![Model Summary](utils/images/model_summary.png)
+![Model Summary](vit/eda/images/model_summary.png)
 
 Final Model Performance:
 ```
-Train Accuracy: __%
-Validation Accuracy: __%
-Test Accuracy: __%
+Train Accuracy: 98.53%
+Validation Accuracy: 98.16%
+Test Accuracy: 97.79%
 ```
 
 ## Installation and Usage (update when app is made)
