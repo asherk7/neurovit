@@ -32,13 +32,13 @@ BATCH_SIZE = 32 # The paper used 4096 for the large ImageNet dataset
 LEARNING_RATE = 0.0001 # The paper used 3e-3 (0.003)
 BETAS = (0.9, 0.999)
 WEIGHT_DECAY = 0.01 # The paper used 0.1
+LABEL_SMOOTHING = 0.1  # Label smoothing to help with overfitting
 
 # Fine tuning parameters (comment out the above parameters and uncomment these to use)
 FT_ATTENTION_DROPOUT = 0.1  # Paper used 0.0 for large datasets, it's increased here to prevent overfitting on this smaller dataset
 FT_NUM_EPOCHS = 10  # Reduced epochs for fine-tuning
 FT_WEIGHT_DECAY = 0.001  # Reduced weight decay for fine-tuning
 FT_LEARNING_RATE = 0.00001  # Reduced learning rate for fine-tuning
-FT_LABEL_SMOOTHING = 0.1  # Label smoothing to help with overfitting
 
 # Dataset directories
 train_dir = "data/Training"
@@ -48,7 +48,6 @@ test_dir = "data/Testing"
 pretrained_weights_pytorch = 'vit/model/vit_b_16-c867db91.pth'
 
 # Weights to fine-tune from first training run
-pretrained_weights_15epoch = 'vit/model/15epoch.pth'
 pretrained_weights_25epoch = 'vit/model/25epoch.pth'
 
 def main():
@@ -80,29 +79,29 @@ def main():
         num_heads=NUM_HEADS,
         mlp_size=MLP_SIZE,
         mlp_dropout=MLP_DROPOUT,
-        attention_dropout=FT_ATTENTION_DROPOUT,
+        attention_dropout=ATTENTION_DROPOUT,
         num_classes=num_classes
     ).to(device)
     
     # Load pretrained weights from HuggingFace ViT model
-    model = load_pretrained_weights(model, pretrained_weights=pretrained_weights_15epoch)
+    model = load_pretrained_weights(model, pretrained_weights=pretrained_weights_pytorch)
 
     # Print model summary
     #model_summary(model)
     
     # The loss function used in the paper is CrossEntropyLoss
-    loss_fn = torch.nn.CrossEntropyLoss(label_smoothing=FT_LABEL_SMOOTHING)
+    loss_fn = torch.nn.CrossEntropyLoss(label_smoothing=LABEL_SMOOTHING)
 
     # Define Adam Optimizer as in the paper
     optimizer = torch.optim.Adam(
         params=model.parameters(), 
-        lr=FT_LEARNING_RATE,
+        lr=LEARNING_RATE,
         betas=BETAS,
-        weight_decay=FT_WEIGHT_DECAY
+        weight_decay=WEIGHT_DECAY
     )
 
     # Total and warmup steps for learning rate scheduler
-    total_steps = len(train_dataloader) * FT_NUM_EPOCHS
+    total_steps = len(train_dataloader) * NUM_EPOCHS
     warmup_steps = int(0.1 * total_steps)  # 10% warmup
 
     # Cosine LR scheduler with warmup (helps avoid bad local minima early in training)
@@ -119,7 +118,7 @@ def main():
                     optimizer=optimizer,
                     scheduler=scheduler,
                     loss_fn=loss_fn,
-                    epochs=FT_NUM_EPOCHS,
+                    epochs=NUM_EPOCHS,
                     device=device)
     
     # Test the model
