@@ -26,7 +26,7 @@ def get_metrics(y_true, y_pred):
         'report': classification_report(y_true, y_pred), # Contains f1-score, precision, and recall
     }
 
-    print(f"Accuracy: {metrics['accuracy']:.4f}")
+    #print(f"Accuracy: {metrics['accuracy']:.4f}")
     print(metrics['report'])
 
     return metrics
@@ -78,9 +78,9 @@ def load_pretrained_weights(model, pretrained_weights):
     converted_state_dict = rename_keys(state_dict)
 
     # Changing the pretrained head weights to match the custom model's head, since the custom model has a different head structure
-    keys_to_update = [k for k in converted_state_dict.keys() if 'mlp_head.linear' in k]
+    """keys_to_update = [k for k in converted_state_dict.keys() if 'mlp_head.linear' in k]
     for k in keys_to_update:
-        converted_state_dict[k] = model.state_dict()[k]
+        converted_state_dict[k] = model.state_dict()[k]"""
 
     model.load_state_dict(converted_state_dict, strict=True)
 
