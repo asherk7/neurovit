@@ -1,7 +1,7 @@
 from torch import nn
-from embedded_patches import EmbeddedPatches
-from encoder import Encoder
-from mlp_head import MLP_Head
+from transformer.embedded_patches import EmbeddedPatches
+from transformer.encoder import Encoder
+from transformer.mlp_head import MLP_Head
 
 class ViT(nn.Module):
     def __init__(self, 

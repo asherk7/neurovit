@@ -1,5 +1,5 @@
 import torch
-from val import validate_step
+from pipeline.val import validate_step
 
 def train_step(model, train_dataloader, optimizer, loss_fn, device):
     """

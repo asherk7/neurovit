@@ -38,8 +38,8 @@ def create_dataloaders(train_dir, test_dir,
     train_dataset, val_dataset = random_split(train_data, [train_size, val_size])
 
     # Print class distributions for debugging purposes
-    print("Train distribution:", get_class_distribution(train_dataset, train_data))
-    print("Val distribution:", get_class_distribution(val_dataset, train_data))
+    #print("Train distribution:", get_class_distribution(train_dataset, train_data))
+    #print("Val distribution:", get_class_distribution(val_dataset, train_data))
 
     # Turn the image datasets into DataLoaders
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True,

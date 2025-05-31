@@ -21,8 +21,8 @@ LayerNorm → MSA → Residual → LayerNorm → MLP → Residual
 """
 
 from torch import nn
-from multihead_attention import MultiheadSelfAttention
-from multilayer_perceptron import MultiLayerPerceptron
+from transformer.multihead_attention import MultiheadSelfAttention
+from transformer.multilayer_perceptron import MultiLayerPerceptron
 #nn.TransformerEncoderLayer is the pytorch implementation, which is the better choice if not reimplementing a paper
 
 class Encoder(nn.Module):
