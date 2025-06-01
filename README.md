@@ -50,6 +50,7 @@ After detection, the user can interact with a medical chatbot to ask follow-up q
 ```
 
 ## Key Tools and Technologies (update with scraper technology)
+## combine model training and application/deployement into this section
 
 ### Model
 - **PyTorch**: Deep learning framework used for model implementation and training.
@@ -117,6 +118,8 @@ The application is built using FastAPI, which provides a modern web interface fo
 
 Accuracy and Loss history:
 ![Accuracy & Loss](vit/eda/images/training_graph.png)
+
+F1 Score:
 ![F1 Score](vit/eda/images/f1_score.png)
 
 Model Summary: 
@@ -124,9 +127,9 @@ Model Summary:
 
 Final Model Performance:
 ```
-Train Accuracy: 98.53%
-Validation Accuracy: 98.16%
-Test Accuracy: 97.79%
+Train Accuracy: 99.50%
+Validation Accuracy: 97.90%
+Test Accuracy: 98.17%
 ```
 
 ## Installation and Usage (update when app is made)
