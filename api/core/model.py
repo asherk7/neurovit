@@ -5,7 +5,7 @@ from PIL import Image
 
 from api.utils.image import preprocess
 
-model = torch.load("path_to_your_trained_model.pt", map_location="cpu")
+model = torch.load("vit/model/vit.pth", map_location="cpu")
 model.eval()
 
 def predict(image: Image.Image):

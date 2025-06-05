@@ -13,8 +13,6 @@ from pipeline.test import test
 from transformer.vit import ViT
 from transformers import get_cosine_schedule_with_warmup
 
-# Vision Transformer Parameters
-
 # Model parameters from the original ViT paper
 PATCH_SIZE = 16
 NUM_HEADS = 12
@@ -24,7 +22,7 @@ ATTENTION_DROPOUT = 0
 
 IN_CHANNELS = 3  # RGB images
 EMBEDDED_DIM = PATCH_SIZE * PATCH_SIZE * IN_CHANNELS
-NUM_PATCHES = (224 * 224) // (PATCH_SIZE * PATCH_SIZE)  # Paper works best with 224x224 image size
+NUM_PATCHES = (224 * 224) // (PATCH_SIZE * PATCH_SIZE) 
 
 # Training hyperparameters from the paper, adjusted due to limitations of the dataset and training environment
 NUM_EPOCHS = 25
@@ -36,7 +34,7 @@ LABEL_SMOOTHING = 0.1  # Label smoothing to help with overfitting
 
 # Fine tuning parameters (comment out the above parameters and uncomment these to use)
 FT_ATTENTION_DROPOUT = 0.1  # Paper used 0.0 for large datasets, it's increased here to prevent overfitting on this smaller dataset
-FT_NUM_EPOCHS = 10  # Reduced epochs for fine-tuning
+FT_NUM_EPOCHS = 15  # Reduced epochs for fine-tuning
 FT_WEIGHT_DECAY = 0.001  # Reduced weight decay for fine-tuning
 FT_LEARNING_RATE = 0.00001  # Reduced learning rate for fine-tuning
 
@@ -83,7 +81,7 @@ def main():
         num_classes=num_classes
     ).to(device)
     
-    # Load pretrained weights from HuggingFace ViT model
+    # Load pretrained weights from PyTorch ViT model
     model = load_pretrained_weights(model, pretrained_weights=pretrained_weights_pytorch)
 
     # Print model summary

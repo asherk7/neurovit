@@ -1,118 +1,112 @@
-# MedBrain: Brain Tumor Classification and AI Doctor
+# NeuroViT-AI: Vision Transformer-based brain tumor diagnosis and medical Q&A using RAG-enhanced LLMs.
 
-A full-stack AI-powered application that enables users to upload brain MRI scans, detect tumors using a Vision Transformer model trained from scratch, and interact with a medical chatbot enhanced by a retrieval-augmented generation (RAG) system. This project combines computer vision, large language models, and modern deployment tools to provide educational insight into brain tumors.
+A full-stack AI-powered application that enables users to upload brain MRI scans, detect tumors using a Vision Transformer model, and interact with a medical chatbot enhanced by a retrieval-augmented generation (RAG) system. This project combines computer vision, large language models, and modern deployment tools to provide educational insight into brain tumors.
 
 ## Table of Contents
 - [Overview](#overview)
 - [How It Works](#how-it-works)
 - [Folder Structure](#folder-structure)
-- [Technologies](#technologies)
-- [Model Training](#model-training)
-- [Application Deployment](#application-deployment)
+- [Key Tools and Technologies](#key-tools-and-technologies)
 - [Results](#results)
 - [Installation and Usage](#installation-and-usage)
 - [References](#references)
 
-## Overview (update later when the project is complete)
+## Overview
 
 This repository contains an implementation of a Vision Transformer (ViT) model from scratch to classify brain tumors using MRI scans. The project is inspired by the paper ["An Image is Worth 16x16 Words"](https://arxiv.org/abs/2010.11929), which introduced the Vision Transformer architecture for image classification tasks. The model is trained to classify MRI brain tumor images into four categories: No Tumor, Glioma Tumor, Meningioma Tumor, and Pituitary Tumor. The dataset used for training and evaluation is the [Brain Tumor MRI Dataset](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset) from Kaggle.
 
-After detection, the user can interact with a medical chatbot to ask follow-up questions about the diagnosed tumor. The chatbot is powered by an LLM deployed via vLLM, finetuned with domain-specific medical knowledge using the MedQA Dataset, and enhanced with tumor-specific knowledge using RAG (Retrieval-Augmented Generation) and supported by real scientific literature fetched from PubMed.
+The model is implemented into the web application, where users can upload images of tumors to have them classified. Once a tumor is detected, users can chat with a built-in AI medical assistant to learn more about their diagnosis. The chatbot is powered by a fine-tuned language model served via vLLM, enhanced using RAG (Retrieval-Augmented Generation) and real scientific literature from PubMed, enabling it to provide accurate and informative medical responses.
 
-## How It Works (this is a high-level overview of the application, update later)
+Demo: (website link or youtube video)
+
+## How It Works
 
 1. **MRI Upload & Tumor Detection**: Users can upload their brain MRI scans through a web interface. The Vision Transformer model processes the image to classify the presence of tumors and draw a bounding box around it.
 2. **Medical Report**: After the tumor is detected, the model generates a medical report summarizing the findings and citing relevant scientific literatures, using the Retrieval-Augmented Generation (RAG) approach.
 3. **AI Doctor Chatbot**: Users can interact with an AI-powered medical chatbot to ask questions about their diagnosis, treatment options, and more. The chatbot uses a large language model (LLM) finetuned on medical data (MedQA) to provide accurate and helpful responses.
 4. **Data Storage**: All uploaded images and generated reports are stored in a secure database, ensuring user privacy and data integrity.
 
-## Folder Structure (Update later)
+Pipeline:
+```
+[User Upload] -> [ViT Tumor Classifier] -> [Bounding Box + Classification] 
+     ↓                                            ↓
+[Report Generator]                         [LLM Chatbot (RAG)]
+```
+
+## Folder Structure
 
 ```
-├── vit/                     # Custom ViT implementation
-│   ├── transformer          # Transformer architecture implementation
-│   ├── model                # Vision Transformer model weights
-│   ├── pipeline             # Training and evaluation pipelines for the ViT model
-│   ├── eda                  # Exploratory Data Analysis scripts/images for the ViT model
-│   └── *.py                 # Other scripts related to the ViT model (e.g. data loading, utils, main training script)
-├── api/                     # FastAPI for web app, model inference, and chatbot
-├── data/                    # Dataset for training and evaluation
-├── llm/                     # LLM deployment with vLLM and LangChain integration
-├── rag/                     # Scripts for vector DB and LangChain setup
-├── scraper/                 # PubMed paper retrieval script
-├── db/                      # PostgreSQL schema and logging scripts
-├── docker/                  # Docker setup for full app
-├── utils/                   # Utility scripts 
-├── .env                     # Environment variables for configuration
+├── vit/                     # Vision Transformer implementation
+│   ├── transformer          # Transformer architecture
+│   ├── model                # Trained weights
+│   ├── pipeline             # Training/evaluation pipelines
+│   ├── eda                  # Exploratory data analysis
+│   └── *.py                 # Utilities and scripts
+├── api/                     # FastAPI backend and endpoints
+├── data/                    # MRI dataset
+├── llm/                     # vLLM deployment & LangChain integration
+├── rag/                     # Vector database & RAG setup
+├── scraper/                 # PubMed scraping scripts
+├── db/                      # PostgreSQL schema and queries
+├── docker/                  # Docker and deployment setup
+├── utils/                   # Helper scripts
+├── .env                     # Environment variables
 ├── .gitignore               
 ├── LICENSE                  
 └── README.md
 ```
 
-## Key Tools and Technologies (update with scraper technology)
-## combine model training and application/deployement into this section
+## Key Tools and Technologies
 
 ### Model
-- **PyTorch**: Deep learning framework used for model implementation and training.
-- **Torchvision**: Library for computer vision tasks, used for data transformations and augmentations.
-- **Scikit-learn**: Library for machine learning, used for data preprocessing and evaluation metrics.
-- **Matplotlib**: Library for data visualization, used to plot training metrics and model performance.
-- **Pandas**: Data manipulation library, used for handling datasets.
+
+**Technologies**
+- **PyTorch**: For implementing and training the Vision Transformer (ViT) model from scratch.
+- **Torchvision**: Used for image augmentations and loading the MRI dataset.
+- **Scikit-learn**: For preprocessing and evaluation metrics.
+- **Matplotlib**: To visualize training performance.
+- **Pandas**: For dataset manipulation.
+
+**Training Summary**:
+
+The Vision Transformer (ViT) model is implemented from scratch, following the ViT-Base architecture introduced in ["An Image is Worth 16x16 Words"](https://arxiv.org/abs/2010.11929). The model was trained in two phases: an initial training phase using pretrained ImageNet1k ViT weights from PyTorch (ViT_B_16_Weights.IMAGENET1K_V1), followed by fine-tuning to optimize performance and accuracy. The implementation closely follows the original architecture, including its optimizer, loss function, and learning rate scheduler, with slight adjustments tailored to the training environment and the smaller dataset size. All modified hyperparameters are documented in `vit/create_model.py`.
+
+- **Initial Training**: Learning rate = `0.0001`, batch size = `32`, epochs = `25`, beta = `(0.9, 0.999)`, weight decay = `0.01`, label smoothing = `0.1`.
+- **Fine-tuning**: Learning rate = `0.00001`, epochs = `15`, attention dropout = `0.1`, weight decay = `0.001`.
+
+Data augmentation includes random rotations, flips, shifts, and normalizing. Early stopping is used to avoid overfitting, and the best model is saved for deployment.
+
 ### Application
-- **FastAPI**: Web framework for building the application interface.
-- **vLLM**: Library for deploying large language models efficiently.
-- **LangChain**: Framework for building Retrieval-Augmented Generation (RAG's) with LLMs, used to create the AI doctor chatbot.
-- **FAISS and vector db go here**: Libraries for efficient similarity search and retrieval of embeddings, used to store and retrieve scientific literature embeddings.
-- **Insert scraper technology here**: Tool for scraping scientific literature from PubMed to enhance the chatbot's knowledge base.
-- **Docker**: Containerization tool for deploying the application.
-- **PostgreSQL**: Database for storing user-uploaded images and generated reports.
-- **OpenCV**: Library for image processing, used for handling and manipulating MRI scans.
+
+**Technologies**:
+
+- **FastAPI** – Backend framework powering the user interface and API endpoints.
+- **OpenCV** – For processing and drawing bounding boxes on MRI scans.
+- **LangChain** – Handles the pipeline for RAG (Retrieval-Augmented Generation) in the chatbot.
+- **vLLM** – Efficient serving of large language models (LLMs).
+- **Hugging Face Transformers, PEFT, QLoRA** – Used to fine-tune and quantize the LLM on the **MedQA** dataset.
+- **FAISS** – Enables fast similarity search on embedded scientific documents.
+- **Vector Database** – Stores and retrieves scientific literature embeddings for RAG.
+- **BeautifulSoup** – Gathers up-to-date biomedical papers from PubMed to power the chatbot.
+- **PostgreSQL** – Stores uploaded MRIs and generated diagnostic reports.
+
+**Workflow**:
+
+The application provides an end-to-end pipeline for brain tumor diagnosis and medical assistance. Users upload MRI scans through a FastAPI-powered interface, where the images are processed with OpenCV and analyzed by a custom Vision Transformer (ViT) model trained in PyTorch and fine-tuned on the Brain Tumor MRI dataset. Once a tumor is detected and classified, the system draws bounding boxes on the image and generates a diagnostic report. Users can then interact with an AI medical chatbot, powered by a large language model fine-tuned using Hugging Face Transformers, PEFT, and QLoRA on the MedQA dataset, and served via vLLM for efficient inference. To provide evidence-based responses, the chatbot uses LangChain to perform retrieval-augmented generation (RAG), querying a FAISS-indexed vector database populated with embeddings of PubMed literature scraped using BeautifulSoup. All user data, including uploaded scans and generated reports, is stored securely in PostgreSQL. The entire application is containerized with Docker and deployed on AWS EC2, with Nginx and Gunicorn handling production traffic and Redis used for caching and performance optimization.
+
 ### Deployment
-- **Docker Compose**: Tool for defining and running multi-container Docker applications.
-- **AWS EC2**: Cloud service for hosting the application.
-- **Nginx**: Web server for serving the application.
-- **Gunicorn**: WSGI HTTP server for running the FastAPI application.
-- **Redis (maybe)**: In-memory data structure store, used for caching and session management.
 
-## Model Training (talk about paper implementation, adjusting hyperparameters, loading weights and finetuning, optimization, etc.)
+**Technologies**:
 
-The Vision Transformer model is implemented from scratch, inspired by the paper ["An Image is Worth 16x16 Words"](https://arxiv.org/abs/2010.11929). The model architecture consists of:
-- **Patch Embedding**: The input image is divided into fixed-size patches, which are then flattened and linearly projected to create patch embeddings.
-- **Transformer Encoder**: The patch embeddings are passed through a series of transformer encoder layers, which apply self-attention mechanisms to capture long-range dependencies in the image.
-- **Classification Head**: The output of the transformer encoder is passed through a classification head to produce the final class probabilities.
-The model is trained on the Brain Tumor MRI dataset using the following hyperparameters:
-- **Learning Rate**: 0.0001
-- **Batch Size**: 32 
-- **Number of Epochs**: 25
-- **Optimizer**: Adam
-- **Loss Function**: Cross-Entropy Loss
-- **Scheduler**: cosine annealing with warm restarts
-The model was finetuned after with the following hyperparameters:
-- **Learning Rate**: 0.00005
-- **Number of Epochs**: 15
-- **Label Smoothing**: 0.1
+- **Docker** – Containerizes all components for reproducible deployment.
+- **Docker Compose** – Manages multi-service containers (API, DB, LLM server, frontend, etc).
+- **AWS EC2** – Hosts the deployed application in the cloud.
+- **Nginx** – Acts as a reverse proxy to serve the app.
+- **Gunicorn** – Runs the FastAPI app as a WSGI server.
+- **Redis** – Used for caching inference results and managing user sessions.
 
-The model is trained using the training set, and its performance is evaluated on the validation set. The training process includes data augmentation techniques such as random rotations, flips, and color jittering to improve model generalization.
-
-To maximize performance, the model weights are initialized using a pre-trained ViT model from the PyTorch library, trained on ImageNet1k (go more in-depth here). The model is then fine-tuned on the brain tumor dataset, adjusting hyperparameters such as learning rate and batch size based on validation performance. The training process includes early stopping to prevent overfitting, and the best model weights are saved for later use in the application.
-
-## Application Deployment (should go in depth on all the tools and how they are used)
-(list the main features and functionalities (e.g. rag, vector db, FAISS (how embeddings are stored/retrieved) llm chosen, script, storage, etc.))
-
-The application is built using FastAPI, which provides a modern web interface for users to interact with the AI doctor chatbot and upload MRI scans. The main features of the application include:
-- **MRI Upload**: Users can upload their brain MRI scans through a user-friendly interface.
-- **Tumor Detection**: The Vision Transformer model processes the uploaded MRI scans to detect and classify brain tumors, drawing bounding boxes around detected tumors using OpenCV.
-- **Medical Report Generation**: After tumor detection, the model generates a medical report summarizing the findings and citing relevant scientific literature using the RAG approach.
-- **AI Doctor Chatbot**: Users can interact with an AI-powered medical chatbot to ask questions about their diagnosis, treatment options, and more. The chatbot uses a large language model (LLM) finetuned on medical data (MedQA) to provide accurate and helpful responses.
-- IMPORTANT: mention how the llm from vllm was finetuned (using huggingface PEFT, QLoRA, etc.) and how the model is loaded in the app
-- **LangChain Integration**: The application uses LangChain to manage the interaction between the LLM and the retrieval system, allowing the chatbot to fetch relevant information from a vector database.
-- **Vector Database**: The application uses a vector database to store and retrieve embeddings of scientific literature, enabling the chatbot to provide accurate and up-to-date information.
-- **PubMed Scraper**: The application includes a scraper that fetches relevant scientific literature from PubMed to enhance the chatbot's knowledge base.
-- **Retrieval-Augmented Generation (RAG)**: The chatbot is enhanced with RAG capabilities, allowing it to fetch relevant scientific literature from PubMed to provide accurate and up-to-date information.
-- **Data Storage**: All uploaded images and generated reports are stored in a secure PostgreSQL database, ensuring user privacy and data integrity.
-- **Dockerized Deployment**: The application is containerized using Docker, allowing for easy deployment and scalability.
-- **AWS Deployment**: The application is deployed on AWS EC2, with Nginx serving as the web server and Gunicorn running the FastAPI application. Redis is used for caching and session management, improving application performance.
-- **consider adding redis, etc. here**
+**Deployment Stack**:
+The entire stack is containerized using Docker and deployed on AWS EC2. Nginx routes requests, Gunicorn runs the FastAPI backend, and vLLM serves the LLM for chatbot responses. Uploaded images and reports are stored in PostgreSQL. Redis can optionally be added to improve response caching and session performance.
 
 ## Results
 
@@ -158,6 +152,7 @@ Test Accuracy: 98.17%
 - [PyTorch Documentation](https://pytorch.org/docs/stable/index.html)
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)
 - [LangChain Documentation](https://python.langchain.com/docs/)
+- [FAISS Documentation](https://github.com/facebookresearch/faiss)
 - [vLLM Documentation](https://vllm.readthedocs.io/en/latest/)
 - [MedQA Dataset](https://paperswithcode.com/dataset/medqa-usmle)
 - [PubMed API Documentation](https://www.ncbi.nlm.nih.gov/books/NBK25501/)
