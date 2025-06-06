@@ -22,6 +22,9 @@ def train_step(model, train_dataloader, optimizer, loss_fn, device):
     correct = 0
 
     for batch, (X, y_true) in enumerate(train_dataloader):
+        if (batch % 10 == 0):
+            print(batch)
+            
         X, y_true = X.to(device), y_true.to(device)
 
         optimizer.zero_grad() # Reset gradients

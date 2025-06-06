@@ -37,19 +37,23 @@ Pipeline:
 
 ```
 ├── vit/                     # Vision Transformer implementation
-│   ├── transformer          # Transformer architecture
-│   ├── model                # Trained weights
-│   ├── pipeline             # Training/evaluation pipelines
-│   ├── eda                  # Exploratory data analysis
-│   └── *.py                 # Utilities and scripts
+│   ├── transformer             # Transformer architecture
+│   ├── model                   # Trained weights
+│   ├── pipeline                # Training/evaluation pipelines
+│   ├── eda                     # Exploratory data analysis
+│   └── *.py                    # Utilities and scripts
 ├── api/                     # FastAPI backend and endpoints
+│   ├── core                    # Core logic and service modules
+│   ├── routes                  # API route handlers
+│   ├── templates               # App UI templates
+│   ├── utils                   # Helper functions
+│   └── main.py                 # App and server entry point
 ├── data/                    # MRI dataset
 ├── llm/                     # vLLM deployment & LangChain integration
 ├── rag/                     # Vector database & RAG setup
 ├── scraper/                 # PubMed scraping scripts
 ├── db/                      # PostgreSQL schema and queries
 ├── docker/                  # Docker and deployment setup
-├── utils/                   # Helper scripts
 ├── .env                     # Environment variables
 ├── .gitignore               
 ├── LICENSE                  
@@ -142,9 +146,9 @@ Test Accuracy: 98.17%
 3. **Run the Application**:
    - Start the FastAPI application:
      ```bash
-     uvicorn main:app --reload
+     uvicorn api.main:app --reload
      ```
-   - Access the application at `http://localhost:8000`.
+   - Access the application at `http://127.0.0.1:8000`.
 
 ## References
 - [An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale](https://arxiv.org/abs/2010.11929)

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NeuroViT-AI: Brain Tumor Classifier & AI Doctor</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1><a href="/" style="text-decoration: none; color: #00bcd4;">NeuroViT-AI</a></h1>
+    <p class="subtitle">Brain Tumor Classification and AI Medical Assistant</p>
+
+    <section class="upload-section">
+      <h2>Upload Brain MRI Scan</h2>
+      <form id="uploadForm" class="form">
+        <input type="file" id="fileInput" name="file" accept="image/*" required />
+        <button type="submit" class="btn">Analyze</button>
+      </form>
+
+      <div id="output" class="result">
+        <h2>Diagnosis Result:</h2>
+        <div class="images-container">
+            <div>
+            <h3>Original Image</h3>
+            <img id="originalImage" src="#" alt="Original MRI" style="max-width: 100%; border-radius: 8px;" />
+            </div>
+            <div>
+            <h3>Image with Bounding Box</h3>
+            <img id="boxImage" src="#" alt="Bounding Box MRI" style="max-width: 100%; border-radius: 8px;" />
+            </div>
+        </div>
+        <p id="predictionText"></p>
+        <h3>AI Doctor's Response:</h3>
+        <p id="chatbotResponse"></p>
+      </div>
+
+      <section id="chat-section" class="chat-section">
+        <h2>Ask the AI Doctor</h2>
+        
+        <div id="chat-window" class="chat-window">
+            <!-- Messages will appear here -->
+        </div>
+
+        <form id="chat-form" class="chat-form">
+            <input type="text" id="user-question" placeholder="Type your question..." required autocomplete="off" />
+            <button type="submit" class="btn">Send</button>
+        </form>
+      </section>
+  </div>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>

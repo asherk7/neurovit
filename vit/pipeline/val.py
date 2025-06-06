@@ -22,6 +22,9 @@ def validate_step(model, val_dataloader, loss_fn, device):
 
     with torch.no_grad(): # Disable gradient calculation for faster validation, helps save memory
         for batch, (X, y_true) in enumerate(val_dataloader):
+            if (batch % 10 == 0):
+                print(batch)
+            
             X, y_true = X.to(device), y_true.to(device)
 
             # Getting predictions, computing loss, and accumulating results

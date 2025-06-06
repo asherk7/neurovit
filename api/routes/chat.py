@@ -1,19 +1,12 @@
-#llm q&a response
-
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from pydantic import BaseModel
-from api.core.rag import answer_question
 
 router = APIRouter()
 
-class ChatInput(BaseModel):
+class ChatRequest(BaseModel):
     question: str
-    tumor_type: str
 
-@router.post("/chat")
-async def chat_with_rag(input: ChatInput):
-    answer, sources = answer_question(input.question, input.tumor_type)
-    return {
-        "answer": answer,
-        "sources": sources
-    }
+@router.post("/chat/")
+async def chat_response(chat: ChatRequest):
+    # For now, return static placeholder
+    return {"answer": "This is a placeholder response from the AI Doctor."}
