@@ -1,7 +1,9 @@
 from PIL import Image
 import numpy as np
 import cv2
+import base64
 import torchvision.transforms as transforms
+import torch
 
 def preprocess_image(image):    
     transform = transforms.Compose([
@@ -14,18 +16,37 @@ def preprocess_image(image):
 
     return input_tensor
 
-def extract_bounding_box(heatmap: np.ndarray, threshold: float = 0.5):
-    """
-    Extract bounding box from heatmap by thresholding.
-    """
-    heatmap = np.uint8(255 * heatmap)
-    _, binary_map = cv2.threshold(heatmap, int(255 * threshold), 255, cv2.THRESH_BINARY)
-    
-    contours, _ = cv2.findContours(binary_map, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    if not contours:
-        return None
+def gen_cam(image, mask):
+    # Create a heatmap from the Grad-CAM mask
+    heatmap = cv2.applyColorMap(np.uint8(255 * mask), cv2.COLORMAP_JET)
+    heatmap = np.float32(heatmap) / 255
 
-    largest = max(contours, key=cv2.contourArea)
-    x, y, w, h = cv2.boundingRect(largest)
+    # Superimpose the heatmap on the original image
+    cam = (1 - 0.5) * heatmap + 0.5 * image
+    cam = cam / np.max(cam)  # Normalize the result
+    cam = np.uint8(255 * cam) # Convert to 8-bit image
+    cam_base64 = cam_to_base64(cam) # Base 64
+    return cam_base64
 
-    return (x, y, x + w, y + h)
+def cam_to_base64(cam_img):
+    # Encode image to PNG format in memory
+    success, buffer = cv2.imencode('.png', cam_img)
+    if not success:
+        raise ValueError("Failed to encode CAM image")
+
+    # Convert to base64
+    cam_base64 = base64.b64encode(buffer).decode('utf-8')
+    return cam_base64
+
+def prepare_input(image):
+    # Normalize the image using the mean and standard deviation
+    means = np.array([0.5, 0.5, 0.5])
+    stds = np.array([0.5, 0.5, 0.5])
+    image -= means
+    image /= stds
+
+    # Transpose the image to match the model's expected input format (C, H, W)
+    image = np.ascontiguousarray(np.transpose(image, (2, 0, 1)))
+    image = image[np.newaxis, ...]  # Add batch dimension
+
+    return torch.tensor(image, requires_grad=True)  # Convert to PyTorch tensor

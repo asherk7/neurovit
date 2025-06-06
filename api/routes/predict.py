@@ -7,7 +7,8 @@ import base64
 from io import BytesIO
 
 from api.core.model import load_model
-from api.core.image import preprocess_image
+from api.core.image import preprocess_image, gen_cam, prepare_input
+from api.core.gradcam import GradCam
 
 router = APIRouter()
 
@@ -19,24 +20,31 @@ class_names = ["Glioma Tumor", "Meningioma Tumor", "No Tumor", "Pituitary Tumor"
 async def predict(file: UploadFile = File(...)):
     contents = await file.read()
     img = Image.open(BytesIO(contents)).convert("RGB")
+
+    # Prediction
     img_tensor = preprocess_image(img)
 
     with torch.no_grad():
         y_pred = model(img_tensor)
         _, predicted = torch.max(y_pred, 1)
         label = class_names[predicted.item()]
-
+    
+    # Resize original image to match heatmap size
+    img_resized_pil = img.resize((224, 224))
     buffered = BytesIO()
-    img.save(buffered, format="PNG")
+    img_resized_pil.save(buffered, format="PNG")
     original_b64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
 
-    # Simulated bounding box
-    img_cv = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
-    h, w, _ = img_cv.shape
-    cv2.rectangle(img_cv, (int(w*0.2), int(h*0.2)), (int(w*0.8), int(h*0.8)), (0, 255, 0), 2)
-    cv2.putText(img_cv, label, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    # Heatmap
+    img_np = np.array(img)
+    img_resized = cv2.resize(img_np, (224, 224))
+    img_normalized = np.float32(img_resized) / 255.0
+    
+    inputs = prepare_input(img_normalized)
+    target_layer = model.mlp_head.norm
 
-    _, buffer = cv2.imencode('.png', img_cv)
-    box_b64 = base64.b64encode(buffer).decode('utf-8')
+    grad_cam = GradCam(model, target_layer)
+    mask = grad_cam(inputs)
+    heatmap_b64 = gen_cam(img_normalized, mask)
 
-    return {"prediction": label, "original_image": original_b64,"box_image": box_b64}
+    return {"prediction": label, "original_image": original_b64,"box_image": heatmap_b64}

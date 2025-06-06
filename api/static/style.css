@@ -34,7 +34,7 @@ h1 {
 
 .images-container > div {
   flex: 1;
-  max-width: 45%;
+  max-width: 70%;
   text-align: center;
 }
 
