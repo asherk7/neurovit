@@ -1,8 +1,36 @@
-FROM python:3.10-slim
+version: '3.8'
 
-WORKDIR /api
+services:
+  llm:
+    image: vllm/vllm-openai:latest
+    ports:
+      - "8000:8000"
+    command: >
+      --model google/gemma-2b
+      --host 0.0.0.0
+      --port 8000
+      --dtype bfloat16
+    volumes:
+      - ./models:/root/.cache/huggingface
+    environment:
+      - HF_HOME=/root/.cache/huggingface
 
-COPY . .
-RUN pip install --no-cache-dir -r requirements.txt
+  api:
+    build:
+      context: ../api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - llm
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+volumes:
+  redis-data:

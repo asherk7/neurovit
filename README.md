@@ -110,7 +110,7 @@ The application provides an end-to-end pipeline for brain tumor diagnosis and me
 - **Redis** – Used for caching inference results and managing user sessions.
 
 **Deployment Stack**:
-The entire stack is containerized using Docker and deployed on AWS EC2. Nginx routes requests, Gunicorn runs the FastAPI backend, and vLLM serves the LLM for chatbot responses. Uploaded images and reports are stored in PostgreSQL. Redis can optionally be added to improve response caching and session performance.
+The entire stack is containerized using Docker and deployed on AWS EC2. Nginx routes requests, Gunicorn runs the FastAPI backend, and vLLM serves the LLM for chatbot responses. Uploaded images and reports are stored in PostgreSQL. Redis is used to improve response caching and session performance.
 
 ## Results
 
@@ -149,6 +149,17 @@ Test Accuracy: 98.17%
      uvicorn api.main:app --reload
      ```
    - Access the application at `http://127.0.0.1:8000`.
+4. **Run the LLM**:
+   - Run Gemma 2B with vLLM:
+   ```python3 -m vllm.entrypoints.openai.api_server \
+  --model google/gemma-2b-it \
+  --tensor-parallel-size 1 \
+  --port 8001 \
+  --gpu-memory-utilization 0.9 \
+  --dtype auto \
+  --trust-remote-code
+   ```
+   - Access the LLM at `http://0.0.0.0:8001`
 
 ## References
 - [An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale](https://arxiv.org/abs/2010.11929)
