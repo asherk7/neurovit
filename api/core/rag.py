@@ -5,6 +5,7 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.llms import HuggingFacePipeline
 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+import torch
 
 # Load vectorstore (already populated with medical docs)
 db = FAISS.load_local("path_to_vectorstore", HuggingFaceEmbeddings())

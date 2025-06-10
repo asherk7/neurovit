@@ -13,26 +13,40 @@ document.getElementById('uploadForm').addEventListener('submit', async function 
     });
 
     const result = await predictRes.json();
-    document.getElementById('predictionText').textContent = `Tumor Type: ${result.prediction}`;
+    const prediction = result.prediction;
+    document.getElementById('predictionText').textContent = `Tumor Type: ${prediction}`;
 
+    // Update Images
     const originalImg = document.getElementById('originalImage');
     const boxImg = document.getElementById('boxImage');
     const imagesContainer = document.querySelector('.images-container');
 
     originalImg.src = `data:image/png;base64,${result.original_image}`;
     boxImg.src = `data:image/png;base64,${result.box_image}`;
-
     imagesContainer.style.display = 'flex';
 
-    // Ask AI Doctor
-    const chatRes = await fetch('/query/', {
+    // First message in chat with explanation
+    const chatWindow = document.getElementById('chat-window');
+
+    const userMsg = document.createElement('div');
+    userMsg.className = 'message user-message';
+    userMsg.textContent = `I've sent my MRI Brain Scan, and the result is ${prediction}, could you elaborate?`;
+
+    const chatRes = await fetch('/chat/', {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: `What does a ${result.prediction} mean?` })
+        body: JSON.stringify({ question: userMsg.textContent })
     });
 
     const chatData = await chatRes.json();
-    document.getElementById('chatbotResponse').textContent = chatData.response;
+    const botMsg = document.createElement('div');
+    botMsg.className = 'message bot-message';
+    botMsg.textContent = chatData.answer || 'Sorry, I couldn’t find information.';
+
+    document.getElementById('chatbotResponse').textContent = chatData.answer;
+    chatWindow.appendChild(botMsg);
+
+    chatWindow.scrollTop = chatWindow.scrollHeight;
 });
 
 document.getElementById('chat-form').addEventListener('submit', async function (e) {
@@ -73,3 +87,40 @@ document.getElementById('chat-form').addEventListener('submit', async function (
   chatWindow.scrollTop = chatWindow.scrollHeight;
 });
 
+const dropdownBtn = document.querySelector('.dropdown-toggle');
+const dropdownMenu = document.querySelector('.dropdown-menu');
+const previewBox = document.getElementById('previewBox');
+const previewImage = document.getElementById('previewImage');
+
+dropdownBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+});
+
+dropdownMenu.querySelectorAll('li').forEach(item => {
+  item.addEventListener('mouseover', () => {
+    previewImage.src = item.getAttribute('data-img');
+    previewBox.style.display = 'block';
+  });
+
+  item.addEventListener('mouseout', () => {
+    previewBox.style.display = 'none';
+  });
+
+  item.addEventListener('click', async () => {
+    const imgPath = item.getAttribute('data-img');
+
+    // Fetch image and convert to File object
+    const response = await fetch(imgPath);
+    const blob = await response.blob();
+    const file = new File([blob], imgPath.split('/').pop(), { type: blob.type });
+
+    // Set to file input
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    document.getElementById('fileInput').files = dataTransfer.files;
+
+    dropdownMenu.style.display = 'none';
+    previewBox.style.display = 'none';
+  });
+});

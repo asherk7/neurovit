@@ -16,17 +16,16 @@ class GradCam:
 
     # Hook to get gradients from the backward pass
     def _get_grads_hook(self, module, input_grad, output_grad):
-        self.gradient = self.reshape_transform(output_grad)  # Store and reshape the output gradients
-
-        def _store_grad(grad):
-            self.gradient = self.reshape_transform(grad)  # Store gradients for later use
-
-        output_grad.register_hook(_store_grad)  # Register hook to store gradients
+        self.gradient = self.reshape_transform(output_grad[0])  # Store and reshape the output gradients
 
     # Register forward hooks to the target layer
     def _get_hook(self):
-        self.target.register_forward_hook(self._get_features_hook)
-        self.target.register_forward_hook(self._get_grads_hook)
+        self.handlers.append(
+            self.target.register_forward_hook(self._get_features_hook)
+        )
+        self.handlers.append(
+            self.target.register_full_backward_hook(self._get_grads_hook)
+        )
 
     # Function to reshape the tensor for visualization
     def reshape_transform(self, tensor, height=14, width=14):
@@ -40,14 +39,14 @@ class GradCam:
         output = self.model(inputs)  # Forward pass
 
         # Get the index of the highest score in the output
-        index = np.argmax(output.cpu().data.numpy())
+        index = np.argmax(output.detach().cpu().numpy())
         target = output[0][index]  # Get the target score
         target.backward()  # Backward pass to compute gradients
 
         # Get the gradients and features
-        gradient = self.gradient[0].cpu().data.numpy()
+        gradient = self.gradient[0].detach().cpu().numpy()
         weight = np.mean(gradient, axis=(1, 2))  # Average the gradients
-        feature = self.feature[0].cpu().data.numpy()
+        feature = self.feature[0].detach().cpu().numpy()
 
         # Compute the weighted sum of the features
         cam = feature * weight[:, np.newaxis, np.newaxis]
@@ -56,7 +55,11 @@ class GradCam:
 
         # Normalize the heatmap
         cam -= np.min(cam)
-        cam /= np.max(cam)
+        cam_max = np.max(cam)
+        if cam_max != 0:
+            cam /= cam_max
+        else:
+            cam[:] = 0
         cam = cv2.resize(cam, (224, 224))  # Resize to match the input image size
         
         return cam  # Return the Grad-CAM heatmap

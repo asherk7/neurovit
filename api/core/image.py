@@ -12,9 +12,10 @@ def preprocess_image(image):
         transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)) 
     ])
 
+    input_mask = transform(image).permute(1, 2, 0).numpy() # Changing dimensions and converting to NP array
     input_tensor = transform(image).unsqueeze(0) # Adding a batch dimension
 
-    return input_tensor
+    return input_tensor, input_mask
 
 def gen_cam(image, mask):
     # Create a heatmap from the Grad-CAM mask
@@ -37,16 +38,3 @@ def cam_to_base64(cam_img):
     # Convert to base64
     cam_base64 = base64.b64encode(buffer).decode('utf-8')
     return cam_base64
-
-def prepare_input(image):
-    # Normalize the image using the mean and standard deviation
-    means = np.array([0.5, 0.5, 0.5])
-    stds = np.array([0.5, 0.5, 0.5])
-    image -= means
-    image /= stds
-
-    # Transpose the image to match the model's expected input format (C, H, W)
-    image = np.ascontiguousarray(np.transpose(image, (2, 0, 1)))
-    image = image[np.newaxis, ...]  # Add batch dimension
-
-    return torch.tensor(image, requires_grad=True)  # Convert to PyTorch tensor

@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
-from api.routes import predict, query, chat
+from api.routes import predict, chat
 
 app = FastAPI(title="NeuroViT-AI")
 
@@ -25,5 +25,4 @@ async def homepage(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 app.include_router(predict.router)
-app.include_router(query.router)
 app.include_router(chat.router)

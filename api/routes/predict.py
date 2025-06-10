@@ -7,7 +7,7 @@ import base64
 from io import BytesIO
 
 from api.core.model import load_model
-from api.core.image import preprocess_image, gen_cam, prepare_input
+from api.core.image import preprocess_image, gen_cam
 from api.core.gradcam import GradCam
 
 router = APIRouter()
@@ -22,7 +22,7 @@ async def predict(file: UploadFile = File(...)):
     img = Image.open(BytesIO(contents)).convert("RGB")
 
     # Prediction
-    img_tensor = preprocess_image(img)
+    img_tensor, inputs = preprocess_image(img)
 
     with torch.no_grad():
         y_pred = model(img_tensor)
@@ -36,15 +36,10 @@ async def predict(file: UploadFile = File(...)):
     original_b64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
 
     # Heatmap
-    img_np = np.array(img)
-    img_resized = cv2.resize(img_np, (224, 224))
-    img_normalized = np.float32(img_resized) / 255.0
-    
-    inputs = prepare_input(img_normalized)
-    target_layer = model.mlp_head.norm
+    target_layer = model.encoder[-1].mlp.ln # Grab norm layer from last encoder block for more spatial information (attention block has unnecessary info)
 
     grad_cam = GradCam(model, target_layer)
-    mask = grad_cam(inputs)
-    heatmap_b64 = gen_cam(img_normalized, mask)
+    mask = grad_cam(img_tensor)
+    heatmap_b64 = gen_cam(inputs, mask)
 
     return {"prediction": label, "original_image": original_b64,"box_image": heatmap_b64}

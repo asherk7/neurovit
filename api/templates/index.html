@@ -8,7 +8,7 @@
 </head>
 <body>
   <div class="container">
-    <h1><a href="/" style="text-decoration: none; color: #00bcd4;">NeuroViT-AI</a></h1>
+    <h1><a href="/">NeuroViT-AI</a></h1>
     <p class="subtitle">Brain Tumor Classification and AI Medical Assistant</p>
 
     <section class="upload-section">
@@ -18,6 +18,20 @@
         <button type="submit" class="btn">Analyze</button>
       </form>
 
+      <div class="dropdown-container">
+        <button class="btn dropdown-toggle">Try Sample Images ▾</button>
+        <ul class="dropdown-menu">
+          <li data-img="static/samples/glioma.jpg">Glioma</li>
+          <li data-img="static/samples/meningioma.jpg">Meningioma</li>
+          <li data-img="static/samples/pituitary.jpg">Pituitary</li>
+          <li data-img="static/samples/no_tumor.jpg">No Tumor</li>
+        </ul>
+        <div class="preview-box" id="previewBox">
+          <img src="" id="previewImage" alt="Preview" />
+        </div>
+      </div>
+    </section>
+
       <div id="output" class="result">
         <h2>Diagnosis Result:</h2>
         <div class="images-container">
@@ -26,7 +40,7 @@
             <img id="originalImage" src="#" alt="Original MRI" style="max-width: 100%; border-radius: 8px;" />
             </div>
             <div>
-            <h3>Image with Bounding Box</h3>
+            <h3>Image with Heatmap</h3>
             <img id="boxImage" src="#" alt="Bounding Box MRI" style="max-width: 100%; border-radius: 8px;" />
             </div>
         </div>
