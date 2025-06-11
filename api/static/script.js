@@ -30,7 +30,12 @@ document.getElementById('uploadForm').addEventListener('submit', async function 
 
     const userMsg = document.createElement('div');
     userMsg.className = 'message user-message';
-    userMsg.textContent = `I've sent my MRI Brain Scan, and the result is ${prediction}, could you elaborate?`;
+    let formattedPrediction = prediction.toLowerCase();
+    if (formattedPrediction !== "no tumor") {
+      formattedPrediction = "a " + formattedPrediction;
+    }
+    userMsg.textContent = `According to the MRI brain scan, the image analyzed has ${formattedPrediction}, could you elaborate on what it is?`;
+    chatWindow.appendChild(userMsg)
 
     const chatRes = await fetch('/chat/', {
         method: 'POST',
@@ -43,7 +48,6 @@ document.getElementById('uploadForm').addEventListener('submit', async function 
     botMsg.className = 'message bot-message';
     botMsg.textContent = chatData.answer || 'Sorry, I couldn’t find information.';
 
-    document.getElementById('chatbotResponse').textContent = chatData.answer;
     chatWindow.appendChild(botMsg);
 
     chatWindow.scrollTop = chatWindow.scrollHeight;
@@ -57,7 +61,6 @@ document.getElementById('chat-form').addEventListener('submit', async function (
   const question = input.value.trim();
   if (!question) return;
 
-  // Add user message to chat
   const userMsg = document.createElement('div');
   userMsg.className = 'message user-message';
   userMsg.textContent = question;
@@ -65,16 +68,14 @@ document.getElementById('chat-form').addEventListener('submit', async function (
 
   input.value = '';
 
-  // Scroll to bottom
   chatWindow.scrollTop = chatWindow.scrollHeight;
 
-  // Send request to backend
   const response = await fetch('/chat/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ question })
+    body: JSON.stringify({ question: question })
   });
 
   const data = await response.json();

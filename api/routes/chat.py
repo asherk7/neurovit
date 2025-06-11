@@ -17,11 +17,3 @@ async def chat_response(chat: ChatRequest):
         return {"answer": llm_answer}
     except Exception as e:
         return {"answer": f"LLM error: {str(e)}"}
-
-    # Check if the question matches a known tumor type
-    for key, explanation in static_responses.items():
-        if key in user_input:
-            return {"answer": explanation}
-    
-    # llm_chain.invoke({"question": chat.question})
-    return {"answer": "This is a placeholder response from the AI Doctor."}
