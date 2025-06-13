@@ -151,13 +151,8 @@ Test Accuracy: 98.17%
    - Access the application at `http://127.0.0.1:8000`.
 4. **Run the LLM**:
    - Run Gemma 2B with vLLM:
-   ```python3 -m vllm.entrypoints.openai.api_server \
-  --model google/gemma-2b-it \
-  --tensor-parallel-size 1 \
-  --port 8001 \
-  --gpu-memory-utilization 0.9 \
-  --dtype auto \
-  --trust-remote-code
+   ```
+   python3 -m vllm.entrypoints.openai.api_server --model google/gemma-2b-it --device cpu --dtype float32 --max-model-len 8192 --tensor-parallel-size 1 --port 8001 --trust-remote-code
    ```
    - Access the LLM at `http://0.0.0.0:8001`
 

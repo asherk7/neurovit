@@ -1,10 +1,9 @@
-from langchain_core.runnables import RunnablePassthrough
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.output_parsers import StrOutputParser
+from langchain.chains.retrieval import create_retrieval_chain
 from langchain_community.vectorstores import FAISS
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain_core.documents.base import Document
-from llm.llm_wrapper import LocalLLM 
+from langchain_huggingface import HuggingFaceEmbeddings
+from llm.llm_wrapper import LocalLLM
+from rag.rag_utils import build_history_aware_retriever, build_document_chain
+
 
 def build_rag_chain():
     model_name = "sentence-transformers/all-MiniLM-L6-v2"
@@ -23,28 +22,14 @@ def build_rag_chain():
         allow_dangerous_deserialization=True
     )
     
-    retriever = vectorstore.as_retriever()
-
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are a helpful medical assistant. Use the context below to answer clearly in plain text. Do not use markdown, bold, italic, or any formatting."),
-        MessagesPlaceholder(variable_name="chat_history"),
-        ("human", "{question}"),
-        ("system", "Relevant medical info:\n{context}")
-    ])
-
     llm = LocalLLM()
 
-    qa_chain = (
-        {
-            "context": retriever | format_docs,
-            "question": RunnablePassthrough(),
-        }
-        | prompt
-        | llm
-        | StrOutputParser()
+    history_aware_retriever = build_history_aware_retriever(vectorstore=vectorstore, llm=llm)
+    document_chain = build_document_chain(llm=llm)
+    
+    rag_chain = create_retrieval_chain(
+        retriever = history_aware_retriever,
+        combine_docs_chain = document_chain
     )
 
-    return qa_chain
-
-def format_docs(docs: list[Document]) -> str:
-    return "\n\n".join(doc.page_content for doc in docs)
+    return rag_chain

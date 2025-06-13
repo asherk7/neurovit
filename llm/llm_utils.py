@@ -1,39 +1,25 @@
-from openai import OpenAI
 import re
-from rag.rag_query import build_rag_chain
+import tiktoken
 
-qa_chain = build_rag_chain()
-client = OpenAI(base_url="http://localhost:8001/v1", api_key="EMPTY")
-chat_history = [
-    {"role": "user", "content": "What is your purpose?"},
-    {"role": "assistant", "content": "I am a helpful assistant for medical brain tumor information. I will respond clearly using plain text only, no markdown, bold, italic, or any special formatting. If i'm asked about medical questions, I will answer to the best of my ability, then remind the user to seek professional advice for further clarification at the end of my message."},
-]
+tokenizer = tiktoken.get_encoding("gpt2")
 
-def ask_llm(user_msg: str) -> str:
-    chat_history.append({"role": "user", "content": user_msg})
-    lc_history = convert_history(chat_history)
+def count_tokens(text: str) -> int:
+    return len(tokenizer.encode(text))
 
-    if ('glioma' in user_msg) or ('meningioma' in user_msg) or ('pituitary' in user_msg):
-        reply = qa_chain.invoke({
-                "question": user_msg,
-                "chat_history": lc_history
-            })
-        answer = remove_markdown(reply)
-        chat_history.append({"role": "assistant", "content": answer})
-        return answer
-    
-    else:
-        response = client.chat.completions.create(
-            model="google/gemma-2b-it",
-            messages=chat_history,
-            temperature=0.2,
-            max_tokens=128,
-        )
+def total_tokens(messages):
+        return sum(count_tokens(msg['content']) for msg in messages)
 
-        reply = response.choices[0].message.content.strip()
-        answer = remove_markdown(reply)
-        chat_history.append({"role": "assistant", "content": answer})
-        return answer
+def trim_chat_history(chat_history: list[dict], max_tokens: int = 4096) -> list[dict]:
+    system_msgs = [msg for msg in chat_history if msg['role'] == 'system']
+    user_assistant_msgs = [msg for msg in chat_history if msg['role'] != 'system']
+
+    total = total_tokens(system_msgs + user_assistant_msgs)
+
+    while total > max_tokens and user_assistant_msgs:
+        del user_assistant_msgs[2:4]
+        total = total_tokens(system_msgs + user_assistant_msgs)
+
+    return system_msgs + user_assistant_msgs
 
 def remove_markdown(text):
     text = re.sub(r"[*_`]", "", text)
