@@ -13,7 +13,7 @@ A full-stack AI-powered application that enables users to upload brain MRI scans
 
 ## Overview
 
-This repository contains an implementation of a Vision Transformer (ViT) model from scratch to classify brain tumors using MRI scans. The project is inspired by the paper ["An Image is Worth 16x16 Words"](https://arxiv.org/abs/2010.11929), which introduced the Vision Transformer architecture for image classification tasks. The model is trained to classify MRI brain tumor images into four categories: No Tumor, Glioma Tumor, Meningioma Tumor, and Pituitary Tumor. The dataset used for training and evaluation is the [Brain Tumor MRI Dataset](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset) from Kaggle.
+This repository contains an implementation of a Vision Transformer (ViT) model from scratch to classify brain tumors using MRI scans, achieving 99% test accuracy. The project is inspired by the paper ["An Image is Worth 16x16 Words"](https://arxiv.org/abs/2010.11929), which introduced the Vision Transformer architecture for image classification tasks. The model is trained to classify MRI brain tumor images into four categories: No Tumor, Glioma Tumor, Meningioma Tumor, and Pituitary Tumor. The dataset used for training and evaluation is the [Brain Tumor MRI Dataset](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset) from Kaggle.
 
 The model is implemented into the web application, where users can upload images of tumors to have them classified. Once a tumor is detected, users can chat with a built-in AI medical assistant to learn more about their diagnosis. The chatbot is powered by a fine-tuned language model served via vLLM, enhanced using RAG (Retrieval-Augmented Generation) and real scientific literature from PubMed, enabling it to provide accurate and informative medical responses.
 
@@ -52,11 +52,11 @@ Pipeline:
 ├── llm/                     # vLLM deployment & LangChain integration
 ├── rag/                     # Vector database & RAG setup
 ├── scraper/                 # PubMed scraping scripts
-├── db/                      # PostgreSQL schema and queries
 ├── docker/                  # Docker and deployment setup
 ├── .env                     # Environment variables
-├── .gitignore               
-├── LICENSE                  
+├── .gitignore 
+├── LICENSE 
+├── requirements.txt         # Package and Library versions
 └── README.md
 ```
 
@@ -76,7 +76,7 @@ Pipeline:
 The Vision Transformer (ViT) model is implemented from scratch, following the ViT-Base architecture introduced in ["An Image is Worth 16x16 Words"](https://arxiv.org/abs/2010.11929). The model was trained in two phases: an initial training phase using pretrained ImageNet1k ViT weights from PyTorch (ViT_B_16_Weights.IMAGENET1K_V1), followed by fine-tuning to optimize performance and accuracy. The implementation closely follows the original architecture, including its optimizer, loss function, and learning rate scheduler, with slight adjustments tailored to the training environment and the smaller dataset size. All modified hyperparameters are documented in `vit/create_model.py`.
 
 - **Initial Training**: Learning rate = `0.0001`, batch size = `32`, epochs = `25`, beta = `(0.9, 0.999)`, weight decay = `0.01`, label smoothing = `0.1`.
-- **Fine-tuning**: Learning rate = `0.00001`, epochs = `15`, attention dropout = `0.1`, weight decay = `0.001`.
+- **Fine-tuning**: Learning rate = `0.00001`, epochs = `15`, attention dropout = `0.05`, weight decay = `0.001`, label smoothing = `0.05`.
 
 Data augmentation includes random rotations, flips, shifts, and normalizing. Early stopping is used to avoid overfitting, and the best model is saved for deployment.
 
@@ -92,11 +92,10 @@ Data augmentation includes random rotations, flips, shifts, and normalizing. Ear
 - **FAISS** – Enables fast similarity search on embedded scientific documents.
 - **Vector Database** – Stores and retrieves scientific literature embeddings for RAG.
 - **BeautifulSoup** – Gathers up-to-date biomedical papers from PubMed to power the chatbot.
-- **PostgreSQL** – Stores uploaded MRIs and generated diagnostic reports.
 
 **Workflow**:
 
-The application provides an end-to-end pipeline for brain tumor diagnosis and medical assistance. Users upload MRI scans through a FastAPI-powered interface, where the images are processed with OpenCV and analyzed by a custom Vision Transformer (ViT) model trained in PyTorch and fine-tuned on the Brain Tumor MRI dataset. Once a tumor is detected and classified, the system draws bounding boxes on the image and generates a diagnostic report. Users can then interact with an AI medical chatbot, powered by a large language model fine-tuned using Hugging Face Transformers, PEFT, and QLoRA on the MedQA dataset, and served via vLLM for efficient inference. To provide evidence-based responses, the chatbot uses LangChain to perform retrieval-augmented generation (RAG), querying a FAISS-indexed vector database populated with embeddings of PubMed literature scraped using BeautifulSoup. All user data, including uploaded scans and generated reports, is stored securely in PostgreSQL. The entire application is containerized with Docker and deployed on AWS EC2, with Nginx and Gunicorn handling production traffic and Redis used for caching and performance optimization.
+The application provides an end-to-end pipeline for brain tumor diagnosis and medical assistance. Users upload MRI scans through a FastAPI-powered interface, where the images are processed with OpenCV and analyzed by a custom Vision Transformer (ViT) model trained in PyTorch and fine-tuned on the Brain Tumor MRI dataset. Once a tumor is detected and classified, the system draws bounding boxes on the image and generates a diagnostic report. Users can then interact with an AI medical chatbot, powered by a large language model fine-tuned using Hugging Face Transformers, PEFT, and QLoRA on the MedQA dataset, and served via vLLM for efficient inference. To provide evidence-based responses, the chatbot uses LangChain to perform retrieval-augmented generation (RAG), querying a FAISS-indexed vector database populated with embeddings of PubMed literature scraped using BeautifulSoup. 
 
 ### Deployment
 
@@ -107,27 +106,20 @@ The application provides an end-to-end pipeline for brain tumor diagnosis and me
 - **AWS EC2** – Hosts the deployed application in the cloud.
 - **Nginx** – Acts as a reverse proxy to serve the app.
 - **Gunicorn** – Runs the FastAPI app as a WSGI server.
-- **Redis** – Used for caching inference results and managing user sessions.
 
 **Deployment Stack**:
-The entire stack is containerized using Docker and deployed on AWS EC2. Nginx routes requests, Gunicorn runs the FastAPI backend, and vLLM serves the LLM for chatbot responses. Uploaded images and reports are stored in PostgreSQL. Redis is used to improve response caching and session performance.
+The entire stack is containerized using Docker and deployed on AWS EC2. Nginx routes requests, Gunicorn runs the FastAPI backend, and vLLM serves the LLM for chatbot responses. 
 
 ## Results
 
 Accuracy and Loss history:
 ![Accuracy & Loss](vit/eda/images/training_graph.png)
 
-F1 Score:
-![F1 Score](vit/eda/images/f1_score.png)
-
-Model Summary: 
-![Model Summary](vit/eda/images/model_summary.png)
-
 Final Model Performance:
 ```
-Train Accuracy: 99.50%
-Validation Accuracy: 97.90%
-Test Accuracy: 98.17%
+Train Accuracy: 99.37%
+Validation Accuracy: 98.16%
+Test Accuracy: 98.93%
 ```
 
 ## Installation and Usage (update when app is made)
@@ -159,11 +151,5 @@ Test Accuracy: 98.17%
 ## References
 - [An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale](https://arxiv.org/abs/2010.11929)
 - [Kaggle Brain Tumor MRI Dataset](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset)
-- [PyTorch Documentation](https://pytorch.org/docs/stable/index.html)
-- [FastAPI Documentation](https://fastapi.tiangolo.com/)
-- [LangChain Documentation](https://python.langchain.com/docs/)
-- [FAISS Documentation](https://github.com/facebookresearch/faiss)
-- [vLLM Documentation](https://vllm.readthedocs.io/en/latest/)
 - [MedQA Dataset](https://paperswithcode.com/dataset/medqa-usmle)
 - [PubMed API Documentation](https://www.ncbi.nlm.nih.gov/books/NBK25501/)
-- [Docker Documentation](https://docs.docker.com/)
