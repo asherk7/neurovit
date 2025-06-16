@@ -13,7 +13,7 @@ A full-stack AI-powered application that enables users to upload brain MRI scans
 
 ## Overview
 
-This repository contains an implementation of a Vision Transformer (ViT) model from scratch to classify brain tumors using MRI scans, achieving 99% test accuracy. The project is inspired by the paper ["An Image is Worth 16x16 Words"](https://arxiv.org/abs/2010.11929), which introduced the Vision Transformer architecture for image classification tasks. The model is trained to classify MRI brain tumor images into four categories: No Tumor, Glioma Tumor, Meningioma Tumor, and Pituitary Tumor. The dataset used for training and evaluation is the [Brain Tumor MRI Dataset](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset) from Kaggle.
+This repository contains an implementation of a Vision Transformer (ViT) model from scratch to classify brain tumors using MRI scans. The project is inspired by the paper ["An Image is Worth 16x16 Words"](https://arxiv.org/abs/2010.11929), which introduced the Vision Transformer architecture for image classification tasks. The model is trained to classify MRI brain tumor images into four categories: No Tumor, Glioma Tumor, Meningioma Tumor, and Pituitary Tumor. The dataset used for training and evaluation is the [Brain Tumor MRI Dataset](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset) from Kaggle.
 
 The model is implemented into the web application, where users can upload images of tumors to have them classified. Once a tumor is detected, users can chat with a built-in AI medical assistant to learn more about their diagnosis. The chatbot is powered by a fine-tuned language model served via vLLM, enhanced using RAG (Retrieval-Augmented Generation) and real scientific literature from PubMed, enabling it to provide accurate and informative medical responses.
 
@@ -114,6 +114,9 @@ The entire stack is containerized using Docker and deployed on AWS EC2. Nginx ro
 
 Accuracy and Loss history:
 ![Accuracy & Loss](vit/eda/images/training_graph.png)
+
+F1 Score:  
+<img src="vit/eda/images/f1_score.png" alt="F1 Score" width="50%">
 
 Final Model Performance:
 ```
