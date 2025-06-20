@@ -1,8 +1,6 @@
 from fastapi import APIRouter, UploadFile, File
 from PIL import Image
 import torch
-import numpy as np
-import cv2
 import base64
 from io import BytesIO
 
@@ -12,34 +10,56 @@ from api.core.gradcam import GradCam
 
 router = APIRouter()
 
+# Load trained ViT model
 model = load_model("vit/model/vit.pth")
 model.eval()
-class_names = ["Glioma Tumor", "Meningioma Tumor", "No Tumor", "Pituitary Tumor"] # Make sure to match the class order in predictions
+
+# Class names must match training order
+class_names = ["Glioma Tumor", "Meningioma Tumor", "No Tumor", "Pituitary Tumor"]
 
 @router.post("/predict/")
 async def predict(file: UploadFile = File(...)):
-    contents = await file.read()
-    img = Image.open(BytesIO(contents)).convert("RGB")
+    """
+    Endpoint for tumor classification and Grad-CAM visualization.
 
-    # Prediction
+    Accepts an image file, runs it through the Vision Transformer model to predict 
+    the tumor type, and generates a Grad-CAM heatmap highlighting important regions.
+
+    Args:
+        file (UploadFile): Uploaded MRI brain scan image in PNG/JPEG format.
+
+    Returns:
+        dict: A JSON response containing:
+            - prediction (str): Predicted tumor class.
+            - original_image (str): Base64-encoded resized original image.
+            - box_image (str): Base64-encoded Grad-CAM heatmap image.
+    """
+    contents = await file.read()
+    img = Image.open(BytesIO(contents)).convert("RGB")  # Ensure image is in RGB format
+
+    # Preprocess image for model input
     img_tensor, inputs = preprocess_image(img)
 
+    # Run prediction
     with torch.no_grad():
         y_pred = model(img_tensor)
         _, predicted = torch.max(y_pred, 1)
         label = class_names[predicted.item()]
-    
-    # Resize original image to match heatmap size
+
+    # Resize the original image to 224x224 for visualization
     img_resized_pil = img.resize((224, 224))
     buffered = BytesIO()
     img_resized_pil.save(buffered, format="PNG")
     original_b64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
 
-    # Heatmap
-    target_layer = model.encoder[-1].mlp.ln # Grab norm layer from last encoder block for more spatial information (attention block has unnecessary info)
-
+    # Use final MLP norm layer for Grad-CAM (avoids noise from attention heads)
+    target_layer = model.encoder[-1].mlp.ln
     grad_cam = GradCam(model, target_layer)
-    mask = grad_cam(img_tensor)
-    heatmap_b64 = gen_cam(inputs, mask)
+    mask = grad_cam(img_tensor)  # Generate Grad-CAM heatmap
+    heatmap_b64 = gen_cam(inputs, mask)  # Superimpose and encode as base64
 
-    return {"prediction": label, "original_image": original_b64,"box_image": heatmap_b64}
+    return {
+        "prediction": label,
+        "original_image": original_b64,
+        "box_image": heatmap_b64
+    }

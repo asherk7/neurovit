@@ -7,6 +7,16 @@ pubmed = PubMed(tool="MyTool", email="masherk03@outlook.com")
 SAVE_DIR = "rag/papers"
 
 def fetch_articles(query, max_results=10):
+    """
+    Fetch articles from PubMed matching the query.
+    
+    Args:
+        query (str): Search query string.
+        max_results (int): Maximum number of results to fetch.
+    
+    Returns:
+        list of dict: List of article metadata dictionaries.
+    """
     results = pubmed.query(query, max_results=max_results)
     articles = []
     for article in results:
@@ -20,7 +30,15 @@ def fetch_articles(query, max_results=10):
     return articles
 
 def get_free_pdf_url(doi):
-    """Uses Unpaywall to check if there's a free fulltext PDF for a DOI"""
+    """
+    Check Unpaywall API for open access PDF URL for a given DOI.
+    
+    Args:
+        doi (str): Digital Object Identifier of the article.
+    
+    Returns:
+        str or None: URL to free PDF if available, else None.
+    """
     headers = {"Accept": "application/json"}
     url = f"https://api.unpaywall.org/v2/{doi}?email=masherk03@outlook.com"
     try:
@@ -35,6 +53,13 @@ def get_free_pdf_url(doi):
     return None
 
 def download_pdf(pdf_url, filename):
+    """
+    Download a PDF from the given URL and save to filename.
+    
+    Args:
+        pdf_url (str): URL to the PDF file.
+        filename (str): Path to save the downloaded PDF.
+    """
     try:
         response = requests.get(pdf_url, stream=True, timeout=20)
         if response.ok and "application/pdf" in response.headers.get("Content-Type", ""):
@@ -59,10 +84,12 @@ def run():
                 print("Skipping (no DOI)")
                 continue
 
+            # Clean up DOI string
             doi = doi.split()[0].strip()
 
             pdf_url = get_free_pdf_url(doi)
             if pdf_url:
+                # Make safe filename from title
                 safe_title = "".join(c if c.isalnum() else "_" for c in article["title"])[:80]
                 filename = os.path.join(SAVE_DIR, f"{safe_title}.pdf")
                 print(filename)
@@ -70,6 +97,7 @@ def run():
             else:
                 print("No free PDF found.")
 
+            # Sleep to avoid hitting API rate limits
             time.sleep(1)
 
 if __name__ == "__main__":

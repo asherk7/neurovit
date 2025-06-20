@@ -15,20 +15,21 @@ A full-stack AI-powered application that enables users to upload brain MRI scans
 
 This repository contains an implementation of a Vision Transformer (ViT) model from scratch to classify brain tumors using MRI scans. The project is inspired by the paper ["An Image is Worth 16x16 Words"](https://arxiv.org/abs/2010.11929), which introduced the Vision Transformer architecture for image classification tasks. The model is trained to classify MRI brain tumor images into four categories: No Tumor, Glioma Tumor, Meningioma Tumor, and Pituitary Tumor. The dataset used for training and evaluation is the [Brain Tumor MRI Dataset](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset) from Kaggle.
 
-The model is implemented into the web application, where users can upload images of tumors to have them classified. Once a tumor is detected, users can chat with a built-in AI medical assistant to learn more about their diagnosis. The chatbot is powered by a fine-tuned language model served via vLLM, enhanced using RAG (Retrieval-Augmented Generation) and real scientific literature from PubMed, enabling it to provide accurate and informative medical responses.
+The model is implemented into the web application, where users can upload images of tumors to have them classified. Once a tumor is detected, the system uses Grad-CAM (from the paper [“Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization”](https://arxiv.org/pdf/1610.02391)) to generate a heatmap highlighting the tumor region by leveraging the attention of the model’s encoder layers. Users can then chat with a built-in AI medical assistant to learn more about their diagnosis. The chatbot is powered by Gemma 2B IT, a large language model instruction-tuned, served via vLLM, enhanced using RAG (Retrieval-Augmented Generation) and real scientific literature from PubMed, enabling it to provide accurate and informative medical responses.
+
 
 Demo: (website link or youtube video)
 
 ## How It Works
 
-1. **MRI Upload & Tumor Detection**: Users can upload their brain MRI scans through a web interface. The Vision Transformer model processes the image to classify the presence of tumors and draw a bounding box around it.
+1. **MRI Upload & Tumor Detection**: Users can upload their brain MRI scans through a web interface. The Vision Transformer model processes the image to classify the presence of tumors and creates a heatmap using Grad-CAM to highlight the tumor.
 2. **Medical Report**: After the tumor is detected, the model generates a medical report summarizing the findings and citing relevant scientific literatures, using the Retrieval-Augmented Generation (RAG) approach.
-3. **AI Doctor Chatbot**: Users can interact with an AI-powered medical chatbot to ask questions about their diagnosis, treatment options, and more. The chatbot uses a large language model (LLM) finetuned on medical data (MedQA) to provide accurate and helpful responses.
+3. **AI Doctor Chatbot**: Users can interact with an AI-powered medical chatbot to ask questions about their diagnosis, treatment options, and more. The chatbot uses a large language model (LLM) integrated with a Retrieval-Augmented Generation (RAG) system that draws information from scientific papers on brain tumors to provide accurate and helpful responses.
 4. **Data Storage**: All uploaded images and generated reports are stored in a secure database, ensuring user privacy and data integrity.
 
 Pipeline:
 ```
-[User Upload] -> [ViT Tumor Classifier] -> [Bounding Box + Classification] 
+[User Upload] -> [ViT Tumor Classifier] -> [Heatmap + Classification] 
      ↓                                            ↓
 [Report Generator]                         [LLM Chatbot (RAG)]
 ```
@@ -36,23 +37,26 @@ Pipeline:
 ## Folder Structure
 
 ```
-├── vit/                     # Vision Transformer implementation
-│   ├── transformer             # Transformer architecture
-│   ├── model                   # Trained weights
-│   ├── pipeline                # Training/evaluation pipelines
-│   ├── eda                     # Exploratory data analysis
-│   └── *.py                    # Utilities and scripts
 ├── api/                     # FastAPI backend and endpoints
 │   ├── core                    # Core logic and service modules
 │   ├── routes                  # API route handlers
+│   ├── static                  # Static files (CSS, JS, images)
 │   ├── templates               # App UI templates
-│   ├── utils                   # Helper functions
-│   └── main.py                 # App and server entry point
+│   └── ...                     # Supporting files
 ├── data/                    # MRI dataset
+├── docker/                  # Docker and deployment setup
 ├── llm/                     # vLLM deployment & LangChain integration
 ├── rag/                     # Vector database & RAG setup
-├── scraper/                 # PubMed scraping scripts
-├── docker/                  # Docker and deployment setup
+│   ├── papers                  # PubMed papers and embeddings
+│   ├── vectorstore             # Vector database for RAG
+│   └── ...                     # Supporting files
+├── scraper/                 # PubMed scraping script
+├── vit/                     # Vision Transformer implementation
+│   ├── eda                     # Exploratory data analysis
+│   ├── model                   # Trained weights
+│   ├── pipeline                # Training/evaluation pipelines
+│   ├── transformer             # Transformer architecture
+│   └── ...                     # Supporting files
 ├── .env                     # Environment variables
 ├── .gitignore 
 ├── LICENSE 
@@ -85,17 +89,17 @@ Data augmentation includes random rotations, flips, shifts, and normalizing. Ear
 **Technologies**:
 
 - **FastAPI** – Backend framework powering the user interface and API endpoints.
-- **OpenCV** – For processing and drawing bounding boxes on MRI scans.
+- **OpenCV** – For processing and creating heatmaps on MRI scans.
 - **LangChain** – Handles the pipeline for RAG (Retrieval-Augmented Generation) in the chatbot.
 - **vLLM** – Efficient serving of large language models (LLMs).
-- **Hugging Face Transformers, PEFT, QLoRA** – Used to fine-tune and quantize the LLM on the **MedQA** dataset.
+- **Hugging Face** – Used Embeddings for creating the RAG system.
+- **OpenAI** – Provides the API for the large language model used in the RAG chatbot.
 - **FAISS** – Enables fast similarity search on embedded scientific documents.
-- **Vector Database** – Stores and retrieves scientific literature embeddings for RAG.
-- **BeautifulSoup** – Gathers up-to-date biomedical papers from PubMed to power the chatbot.
+- **PubMed API** – Gathers up-to-date biomedical papers from PubMed to power the chatbot.
 
 **Workflow**:
 
-The application provides an end-to-end pipeline for brain tumor diagnosis and medical assistance. Users upload MRI scans through a FastAPI-powered interface, where the images are processed with OpenCV and analyzed by a custom Vision Transformer (ViT) model trained in PyTorch and fine-tuned on the Brain Tumor MRI dataset. Once a tumor is detected and classified, the system draws bounding boxes on the image and generates a diagnostic report. Users can then interact with an AI medical chatbot, powered by a large language model fine-tuned using Hugging Face Transformers, PEFT, and QLoRA on the MedQA dataset, and served via vLLM for efficient inference. To provide evidence-based responses, the chatbot uses LangChain to perform retrieval-augmented generation (RAG), querying a FAISS-indexed vector database populated with embeddings of PubMed literature scraped using BeautifulSoup. 
+The application provides an end-to-end pipeline for brain tumor diagnosis and medical assistance. Users upload MRI scans through a FastAPI-powered interface, where the images are processed with OpenCV and analyzed by a custom Vision Transformer (ViT) model trained in PyTorch and fine-tuned on the Brain Tumor MRI dataset. Once a tumor is detected and classified, the system creates a heatmap on the image and generates a diagnostic report. Users can then interact with an AI medical chatbot, powered by Gemma 2B IT, a large language model served via vLLM for efficient inference. To provide evidence-based responses, the chatbot uses LangChain to perform retrieval-augmented generation (RAG), querying a FAISS-indexed vector database populated with embeddings of PubMed literature scraped using BeautifulSoup. 
 
 ### Deployment
 
@@ -145,7 +149,7 @@ Test Accuracy: 98.93%
      ```
    - Access the application at `http://127.0.0.1:8000`.
 4. **Run the LLM**:
-   - Run Gemma 2B with vLLM:
+   - Run Gemma 2B IT with vLLM:
    ```
    python3 -m vllm.entrypoints.openai.api_server --model google/gemma-2b-it --device cpu --dtype float32 --max-model-len 8192 --tensor-parallel-size 1 --port 8001 --trust-remote-code
    ```
@@ -153,6 +157,6 @@ Test Accuracy: 98.93%
 
 ## References
 - [An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale](https://arxiv.org/abs/2010.11929)
+- [Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization](https://arxiv.org/pdf/1610.02391)
 - [Kaggle Brain Tumor MRI Dataset](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset)
-- [MedQA Dataset](https://paperswithcode.com/dataset/medqa-usmle)
 - [PubMed API Documentation](https://www.ncbi.nlm.nih.gov/books/NBK25501/)
