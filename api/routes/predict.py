@@ -52,8 +52,8 @@ async def predict(file: UploadFile = File(...)):
     img_resized_pil.save(buffered, format="PNG")
     original_b64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
 
-    # Use final MLP norm layer for Grad-CAM (avoids noise from attention heads)
-    target_layer = model.encoder[-1].mlp.ln
+    # Use final attention norm layer for Grad-CAM
+    target_layer = model.encoder[-1].self_attention.ln
     grad_cam = GradCam(model, target_layer)
     mask = grad_cam(img_tensor)  # Generate Grad-CAM heatmap
     heatmap_b64 = gen_cam(inputs, mask)  # Superimpose and encode as base64

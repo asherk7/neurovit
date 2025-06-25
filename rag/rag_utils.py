@@ -15,7 +15,6 @@ def format_docs(docs: list[Document]) -> str:
     """
     return "\n\n".join(doc.page_content for doc in docs)
 
-
 def build_document_chain(llm):
     """
     Builds a chain that combines documents into a prompt for the LLM to generate an answer.
@@ -37,7 +36,6 @@ def build_document_chain(llm):
 
     # Create a stuff documents chain which concatenates all retrieved documents into the prompt and calls the llm
     return create_stuff_documents_chain(llm, prompt)
-
 
 def build_history_aware_retriever(vectorstore, llm):
     """

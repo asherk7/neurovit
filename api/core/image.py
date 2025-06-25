@@ -25,12 +25,12 @@ def preprocess_image(image):
     ])
 
     # Apply the transformation and convert to numpy for visualization
-    input_mask = transform(image).permute(1, 2, 0).numpy()
-    input_tensor = transform(image).unsqueeze(0) 
+    input_mask = transform(image).permute(1, 2, 0).numpy() # Change to (H, W, C) format for visualization
+    input_tensor = transform(image).unsqueeze(0) # Add batch dimension (1, C, H, W) for model input
 
     return input_tensor, input_mask
 
-def gen_cam(image, mask):
+def gen_cam(image, mask, alpha=0.5):
     """
     Generates a Grad-CAM heatmap and superimposes it on the original image.
 
@@ -46,12 +46,13 @@ def gen_cam(image, mask):
     heatmap = np.float32(heatmap) / 255 # Normalize 
 
     # Superimpose the heatmap on the original image
-    cam = (1 - 0.5) * heatmap + 0.5 * image # Blend the heatmap and original image
+    # cam = alpha * heatmap + (1 - alpha) * image
+    cam = (1 - alpha) * heatmap + alpha * image # Blend the heatmap and original image
     cam = cam / np.max(cam) # Normalize
-    cam = np.uint8(255 * cam) # Convert the result to an 8-bit image
 
-    # Convert the final image to base64
-    cam_base64 = cam_to_base64(cam)
+    cam = np.uint8(255 * cam) # Convert the result to an 8-bit image
+    cam_base64 = cam_to_base64(cam) # Convert the final image to base64
+
     return cam_base64
 
 def cam_to_base64(cam_img):

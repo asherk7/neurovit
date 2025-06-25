@@ -1,36 +1,21 @@
-version: '3.8'
-
 services:
-  llm:
-    image: vllm/vllm-openai:latest
-    ports:
-      - "8000:8000"
-    command: >
-      --model google/gemma-2b
-      --host 0.0.0.0
-      --port 8000
-      --dtype bfloat16
-    volumes:
-      - ./models:/root/.cache/huggingface
-    environment:
-      - HF_HOME=/root/.cache/huggingface
-
   api:
     build:
-      context: ../api
+      context: ..
+      dockerfile: docker/Dockerfile.api
     ports:
-      - "8080:8080"
-    depends_on:
-      - llm
-
-  redis:
-    image: redis:7
-    container_name: redis
-    ports:
-      - "6379:6379"
+      - "8000:8000"
     volumes:
-      - redis-data:/data
-    restart: unless-stopped
+      - ../:/app
+    depends_on:
+      - vllm
 
-volumes:
-  redis-data:
+  vllm:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.vllm
+    ports:
+      - "8001:8001"
+    volumes:
+      - ../:/app
+    shm_size: '2gb'
