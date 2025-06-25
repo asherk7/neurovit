@@ -4,7 +4,7 @@ from llm.ask_llm import AskLLM
 from rag.rag_query import build_rag_chain
 
 # Constants for the local vLLM server
-BASE_URL = "http://localhost:8001/v1"
+BASE_URL = "http://vllm:8001/v1"
 API_KEY = "EMPTY"
 
 # Initialize RAG chain and LLM wrapper

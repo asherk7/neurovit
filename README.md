@@ -17,7 +17,7 @@ This repository contains an implementation of a Vision Transformer (ViT) model f
 
 The model is implemented into the web application, where users can upload images of tumors to have them classified. Once a tumor is detected, the system uses Grad-CAM, from the paper [“Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization”](https://arxiv.org/pdf/1610.02391) to generate a heatmap highlighting the tumor region by leveraging the model’s encoder layers. Users can then chat with an AI assistant, powered by Gemma 2B IT, served via vLLM, and enhanced using RAG from Langchain. The information is retrieved from a Vector DB from FAISS, using real scientific literature from PubMed, enabling it to provide accurate and informative medical responses.
 
-Demo: (website link or youtube video)
+Demo: https://youtube/com/videolink (originally hosted at https://35.182.73.147:8000, but currently down) 
 
 ## How It Works
 
@@ -131,7 +131,7 @@ Test Accuracy: 98.93%
 2. **Train the Model:**
    - Install dependencies then run the create_model script:
    ```bash
-   cd utils
+   cd vit
    python create_model.py
    ```
    - This will train the Vision Transformer model on the brain tumor MRI dataset.

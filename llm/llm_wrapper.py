@@ -13,7 +13,7 @@ class LocalLLM(LLM):
         base_url (str): URL of the local vLLM server.
         model (str): Model name to use on the vLLM server.
     """
-    base_url: str = "http://localhost:8001/v1"
+    base_url: str = "http://vllm:8001/v1"
     model: str = "google/gemma-2b-it"
 
     @property
