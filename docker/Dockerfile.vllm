@@ -4,10 +4,10 @@ ENTRYPOINT python3 -m vllm.entrypoints.openai.api_server \
     --port 8001 \
     --host 0.0.0.0 \
     --model google/gemma-2b-it \
-    --device cuda \
+    --device cuda \ 
     --dtype float32 \
     --max-model-len 8192 \
     --tensor-parallel-size 1 \
     --trust-remote-code
 
-#ENTRYPOINT ["python", "-m", "vllm.entrypoints.openai.api_server", "--port", "8001", "--host", "0.0.0.0", "--model", "google/gemma-2b-it", "--device", "cpu", "--dtype", "float32", "--max-model-len", "8192", "--tensor-parallel-size", "1", "--trust-remote-code"]
+# Change device to "cpu" if you want to run on CPU
