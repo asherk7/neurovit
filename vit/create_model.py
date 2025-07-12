@@ -22,7 +22,7 @@ ATTENTION_DROPOUT = 0
 
 IN_CHANNELS = 3  # RGB images
 EMBEDDED_DIM = PATCH_SIZE * PATCH_SIZE * IN_CHANNELS
-NUM_PATCHES = (224 * 224) // (PATCH_SIZE * PATCH_SIZE) 
+NUM_PATCHES = (224 * 224) // (PATCH_SIZE * PATCH_SIZE)
 
 # Training hyperparameters from the paper, adjusted due to limitations of the dataset and training environment
 NUM_EPOCHS = 25
@@ -59,13 +59,13 @@ def main():
     train_transformer = transform_images(train=True)
     test_transformer = transform_images(train=False)
     train_dataloader, val_dataloader, test_dataloader, classes = create_dataloaders(
-        train_dir=train_dir, 
-        test_dir=test_dir, 
-        train_transform=train_transformer, 
+        train_dir=train_dir,
+        test_dir=test_dir,
+        train_transform=train_transformer,
         test_transform=test_transformer,
         batch_size=BATCH_SIZE
     )
-    
+
     num_classes = len(classes)
 
     # Initialize the Vision Transformer model
@@ -80,19 +80,19 @@ def main():
         attention_dropout=ATTENTION_DROPOUT,
         num_classes=num_classes
     ).to(device)
-    
+
     # Load pretrained weights from PyTorch ViT model
     model = load_pretrained_weights(model, pretrained_weights=pretrained_weights_pytorch)
 
     # Print model summary
-    #model_summary(model)
-    
+    model_summary(model)
+
     # The loss function used in the paper is CrossEntropyLoss
     loss_fn = torch.nn.CrossEntropyLoss(label_smoothing=LABEL_SMOOTHING)
 
     # Define Adam Optimizer as in the paper
     optimizer = torch.optim.Adam(
-        params=model.parameters(), 
+        params=model.parameters(),
         lr=LEARNING_RATE,
         betas=BETAS,
         weight_decay=WEIGHT_DECAY
@@ -118,10 +118,10 @@ def main():
                     loss_fn=loss_fn,
                     epochs=NUM_EPOCHS,
                     device=device)
-    
+
     # Test the model
     y_pred, y_true = test(model=model, test_dataloader=test_dataloader, device=device)
-    
+
     # Visualize results and calculate metrics
     visualize(results, y_pred, y_true, classes)
     get_metrics(y_pred, y_true)

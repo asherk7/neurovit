@@ -1,4 +1,4 @@
-# NeuroViT-AI: Vision Transformer-based brain tumor diagnosis and medical Q&A using RAG-enhanced LLMs.
+# NeuroViT: Vision Transformer-based brain tumor diagnosis and medical Q&A using RAG-enhanced LLMs.
 
 A full-stack AI-powered application that enables users to upload brain MRI scans, detect tumors with Transformers, and interact with a chatbot enhanced by a retrieval-augmented generation (RAG) system.
 
