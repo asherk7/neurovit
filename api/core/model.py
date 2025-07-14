@@ -16,7 +16,7 @@ def load_model(weights_path: str):
         ViT: The Vision Transformer model with loaded weights.
     """
     model = ViT() 
-    model.load_state_dict(torch.load(weights_path, map_location="cpu")) # Change to "cpu" if you want to load on CPU
+    model.load_state_dict(torch.load(weights_path, map_location="cpu")) # Change to "cuda" if you want to load on GPU
     return model
 
 def load_onnx_model(model_path: str):

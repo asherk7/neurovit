@@ -1,6 +1,5 @@
 from fastapi import APIRouter, UploadFile, File
 from PIL import Image
-import torch
 import base64
 from io import BytesIO
 import numpy as np
