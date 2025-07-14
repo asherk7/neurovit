@@ -3,8 +3,9 @@ from PIL import Image
 import torch
 import base64
 from io import BytesIO
+import numpy as np
 
-from api.core.model import load_model
+from api.core.model import load_model, load_onnx_model
 from api.core.image import preprocess_image, gen_cam
 from api.core.gradcam import GradCam
 
@@ -12,6 +13,7 @@ router = APIRouter()
 
 # Load trained ViT model
 model = load_model("vit/model/vit.pth")
+onnx_model = load_onnx_model("vit/model/vit.onnx")
 model.eval()
 
 # Class names must match training order
@@ -39,12 +41,15 @@ async def predict(file: UploadFile = File(...)):
 
     # Preprocess image for model input
     img_tensor, inputs = preprocess_image(img)
-
-    # Run prediction
-    with torch.no_grad():
-        y_pred = model(img_tensor)
-        _, predicted = torch.max(y_pred, 1)
-        label = class_names[predicted.item()]
+    img_np = img_tensor.cpu().numpy()
+    
+    # ONNX inference
+    ort_inputs = {onnx_model.get_inputs()[0].name: img_np}
+    ort_outputs = onnx_model.run(None, ort_inputs)
+    y_pred_onnx = ort_outputs[0]
+    
+    predicted = np.argmax(y_pred_onnx, axis=1)[0]
+    label = class_names[predicted]
 
     # Resize the original image to 224x224 for visualization
     img_resized_pil = img.resize((224, 224))

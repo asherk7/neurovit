@@ -125,8 +125,8 @@ Test Accuracy: 98.93%
 ## Installation and Usage
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/asherk7/MedBrain.git
-   cd MedBrain
+   git clone https://github.com/asherk7/NeuroViT.git
+   cd NeuroViT
    ```
 2. **Train the Model:**
    - Install dependencies then run the create_model script:

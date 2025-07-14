@@ -5,3 +5,5 @@ data
 *.pth
 *.env
 *.log
+*.pdf
+*.onnx

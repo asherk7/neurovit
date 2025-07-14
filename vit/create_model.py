@@ -11,7 +11,7 @@ from eda.visualizations import visualize
 from pipeline.train import train
 from pipeline.test import test
 from transformer.vit import ViT
-from transformers import get_cosine_schedule_with_warmup
+from transformers.optimization import get_cosine_schedule_with_warmup
 
 # Model parameters from the original ViT paper
 PATCH_SIZE = 16

@@ -31,7 +31,7 @@ class Encoder(nn.Module):
                  num_heads=12, 
                  mlp_size=3072, 
                  mlp_dropout=0.1, 
-                 attention_dropout=0):
+                 attention_dropout=0.0):
         """
         Initializes the encoder block with a self-attention module and a feedforward MLP.
 

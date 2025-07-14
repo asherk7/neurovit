@@ -1,0 +1,62 @@
+# Core ML and NLP libraries
+torch>=2.0.0
+transformers>=4.36.0
+datasets>=2.14.0
+tokenizers>=0.15.0
+accelerate>=0.24.0
+
+# QLoRA and PEFT
+peft>=0.6.0
+bitsandbytes>=0.41.0
+
+# Training and optimization
+scipy>=1.11.0
+scikit-learn>=1.3.0
+numpy>=1.24.0
+pandas>=2.0.0
+
+# Evaluation and metrics
+matplotlib>=3.7.0
+seaborn>=0.12.0
+plotly>=5.15.0
+
+# Experiment tracking (optional)
+wandb>=0.15.0
+tensorboard>=2.14.0
+
+# Data processing
+pyarrow>=12.0.0
+datasets>=2.14.0
+
+# Utilities
+tqdm>=4.65.0
+rich>=13.0.0
+psutil>=5.9.0
+
+# Configuration and logging
+pyyaml>=6.0
+python-dotenv>=1.0.0
+omegaconf>=2.3.0
+
+# Model serving and deployment
+fastapi>=0.104.0
+uvicorn>=0.24.0
+pydantic>=2.0.0
+
+# Development and testing
+pytest>=7.4.0
+black>=23.0.0
+flake8>=6.0.0
+pre-commit>=3.4.0
+
+# Memory optimization
+torch-optimizer>=0.3.0
+deepspeed>=0.10.0  # Optional for distributed training
+
+# GPU monitoring
+nvidia-ml-py>=12.0.0
+gpustat>=1.1.0
+
+# Medical/Scientific
+pubmed-parser>=0.3.0  # For processing medical literature
+medspacy>=1.0.0  # Medical NLP utilities

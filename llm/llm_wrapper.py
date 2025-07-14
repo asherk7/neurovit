@@ -17,7 +17,7 @@ class LocalLLM(LLM):
     model: str = "google/gemma-2b-it"
 
     @property
-    def _llm_type(self) -> str:
+    def _llm_type(self):
         """
         Identifier for the LLM type.
 
@@ -31,7 +31,7 @@ class LocalLLM(LLM):
         prompts: List[str],
         stop: Optional[List[str]] = None,
         run_manager: Optional[Any] = None,
-    ) -> LLMResult:
+    ):
         """
         Generate completions for a list of prompt strings.
 
@@ -60,7 +60,7 @@ class LocalLLM(LLM):
 
         return LLMResult(generations=[generations])
 
-    def _call(self, messages: List[Any], stop: Optional[List[str]] = None) -> str:
+    def _call(self, messages: List[Any], stop: Optional[List[str]] = None):
         """
         Generate a single completion from a list of messages.
 
@@ -90,7 +90,7 @@ class LocalLLM(LLM):
         content = self._remove_markdown(data["choices"][0]["message"]["content"].strip())
         return content
 
-    def _remove_markdown(self, text: str) -> str:
+    def _remove_markdown(self, text: str):
         """
         Remove simple markdown formatting characters from text.
 
