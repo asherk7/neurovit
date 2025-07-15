@@ -72,6 +72,7 @@ Pipeline:
 - **Matplotlib/Seaborn**: Visualizing images and training performance.
 - **NumPy**: Image tensor manipulation and numerical operations.
 - **Pandas**: Dataset manipulation.
+- **ONNX**: Model conversion and deployment.
 
 The Vision Transformer model is implemented from scratch, following the ViT-Base architecture introduced in ["An Image is Worth 16x16 Words"](https://arxiv.org/abs/2010.11929). The model was trained in two phases: an initial training phase using pretrained ImageNet1k ViT weights from PyTorch (ViT_B_16_Weights.IMAGENET1K_V1), followed by fine-tuning to optimize performance and accuracy. The implementation closely follows the original architecture, including its optimizer, loss function, and learning rate scheduler, with slight adjustments tailored to the training environment and the smaller dataset size. All modified hyperparameters are documented in `vit/create_model.py`.
 
