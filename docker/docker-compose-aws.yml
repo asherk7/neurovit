@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  vllm:
+    image: 698056690554.dkr.ecr.ca-central-1.amazonaws.com/neurovit/vllm:latest
+    container_name: vllm
+    ports:
+      - "8001:8001"
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=token (create your own if you see this)
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  fastapi:
+    image: 698056690554.dkr.ecr.ca-central-1.amazonaws.com/neurovit/fastapi:latest
+    container_name: fastapi
+    ports:
+      - "80:8000"
+    depends_on:
+      - vllm

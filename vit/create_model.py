@@ -6,7 +6,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from vit.data_setup import create_dataloaders, transform_images
-from utils import set_seeds, load_pretrained_weights, model_summary, get_metrics
+from vit.utils import set_seeds, load_pretrained_weights, model_summary, get_metrics
 from eda.visualizations import visualize
 from pipeline.train import train
 from pipeline.test import test

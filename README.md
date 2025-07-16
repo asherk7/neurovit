@@ -17,7 +17,7 @@ This repository contains an implementation of a Vision Transformer (ViT) model f
 
 The model is implemented into the web application, where users can upload images of tumors to have them classified. Once a tumor is detected, the system uses Grad-CAM, from the paper [“Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization”](https://arxiv.org/pdf/1610.02391) to generate a heatmap highlighting the tumor region by leveraging the model’s encoder layers. Users can then chat with an AI assistant, powered by Gemma 2B IT, served via vLLM, and enhanced using RAG from Langchain. The information is retrieved from a Vector DB from FAISS, using real scientific literature from PubMed, enabling it to provide accurate and informative medical responses.
 
-Demo: https://youtube/com/videolink (originally hosted at https://35.182.73.147:8000, but currently down) 
+Demo: https://youtu.be/dnygzSd4YaE (Originally hosted at http://99.79.114.128/, now permanently offline)
 
 ## How It Works
 
@@ -108,6 +108,8 @@ Users can then talk to an AI medical chatbot, powered by the Gemma 2B IT model s
 
 The entire stack is containerized using Docker and orchestrated with Docker Compose. It's deployed on AWS EC2, with Nginx handling reverse proxying and Gunicorn running the FastAPI backend.
 
+The application was deployed on an AWS EC2 instance using the g4dn.xlarge GPU configuration to enable accelerated inference with vLLM. The Docker images were converted from the ARM64 architecture to AMD64 to ensure compatibility with the EC2 instance and then pushed to AWS Elastic Container Registry (ECR) for scalable storage. On the EC2 instance, Docker, the NVIDIA container toolkit, the CUDA toolkit, and the appropriate Ubuntu NVIDIA GPU drivers were installed following the process outlined in this [setup guide](https://www.youtube.com/watch?v=N_KFYqvEZvU). The Docker images were pulled from ECR and orchestrated using Docker Compose. This approach enabled the FastAPI backend and vLLM server to run concurrently, leveraging the GPU to maximize performance and reduce inference latency.
+
 ## Results
 
 Accuracy and Loss history:
@@ -130,16 +132,17 @@ Test Accuracy: 98.93%
    cd NeuroViT
    ```
 2. **Train the Model:**
-   - Install dependencies then run the create_model script:
+   - Install dependencies then create the model:
    ```bash
-   cd vit
-   python create_model.py
+   python vit/create_model.py 
+   python utils/convert_model.py
    ```
    - This will train the Vision Transformer model on the brain tumor MRI dataset.
 3. **Run the Docker Containers:**
    - Ensure Docker and Docker Compose are installed.
    - Build and run the containers:
    ```bash
+   cd docker
    docker-compose up --build
    ```
    - Access the application at `http://127.0.0.1:8000`.
@@ -151,3 +154,4 @@ Test Accuracy: 98.93%
 - [Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization](https://arxiv.org/pdf/1610.02391)
 - [Kaggle Brain Tumor MRI Dataset](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset)
 - [PubMed API Documentation](https://www.ncbi.nlm.nih.gov/books/NBK25501/)
+- [Setup an AI / ML Server From Scratch in AWS With NVIDIA GPU, Docker](https://www.youtube.com/watch?v=N_KFYqvEZvU)
