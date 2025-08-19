@@ -149,6 +149,9 @@ Test Accuracy: 98.93%
    - Use the web interface to upload MRI scans for tumor detection.
    - Interact with the AI chatbot to ask questions about your diagnosis and treatment options.
 
+### Disclaimer  
+The model can be trained on CPU or GPU (recommended), however, the vLLM model can only be deployed using a GPU
+
 ## References
 - [An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale](https://arxiv.org/abs/2010.11929)
 - [Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization](https://arxiv.org/pdf/1610.02391)
