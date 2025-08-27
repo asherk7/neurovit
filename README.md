@@ -152,6 +152,17 @@ Test Accuracy: 98.93%
 ### Disclaimer  
 The model can be trained on CPU or GPU (recommended), however, the vLLM model can only be deployed using a GPU
 
+### Future Improvements  
+- Combine AskLLM and WrapperLLM into one class, refactor the code to use this class in the RAG and regular call
+- Add guardrails for images and messages sent that aren't medical-related
+- Finding the most probable tumour locations using the average heatmap
+  - Hook the last encoder layer and grab the CLS token (1, 197, 768)
+  - Use UMAP and reduce dimensionality, use K-Means to cluster images (get clusters of different brain scan angles)
+  - For each cluster, calculate a heatmap for each image using gradient values and GRAD-CAM equations
+  - Normalize and average the heatmaps, get the most probable tumour location for each view
+- Fine-tune the LLM on a medical dataset using QLoRA & HF PEFT, then quantize
+- Add the Tumour model to HuggingFace for public use
+
 ## References
 - [An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale](https://arxiv.org/abs/2010.11929)
 - [Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization](https://arxiv.org/pdf/1610.02391)
